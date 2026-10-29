@@ -173,10 +173,109 @@ input[type=range]{width:100%;accent-color:var(--destaque)}
 #aviso{position:fixed;left:50%;top:84px;transform:translateX(-50%);background:#0b0d10;border:1px solid var(--borda);border-radius:10px;
   padding:9px 14px;font-size:12.5px;display:none;z-index:9;max-width:520px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
 #carregando{position:fixed;inset:0;display:grid;place-items:center;background:#11151a;color:var(--texto-2);z-index:20;transition:opacity .6s}
+#fade{position:fixed;inset:0;background:#0b0d10;opacity:0;pointer-events:none;transition:opacity .18s}
+#fade.on{opacity:1}
+kbd{display:inline-block;min-width:18px;padding:0 5px;margin:0 1px;border-radius:4px;border:1px solid rgba(255,255,255,.22);border-bottom-width:2px;
+  font:600 11px/16px var(--mono);color:var(--texto);text-align:center;background:rgba(255,255,255,.06)}
+
+/* ---------- modo corredores (3D na altura dos olhos) ---------- */
+#hudWrap{position:fixed;left:324px;right:364px;bottom:calc(var(--alt-base, 50px) + 22px);display:flex;justify-content:center;pointer-events:none}
+#hud{position:static;pointer-events:auto;padding:10px 12px;display:flex;flex-direction:column;gap:8px;max-width:100%}
+.hud-cab{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.hud-onde{display:flex;align-items:center;gap:10px;min-width:0;font-size:12.5px;color:var(--texto-2)}
+.hud-onde b{font-size:14px;color:var(--texto);font-family:var(--mono);white-space:nowrap}
+.hud-onde span{display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.hud-bts{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.hb{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--borda);background:rgba(255,255,255,.07);padding:5px 9px;border-radius:8px;
+  cursor:pointer;white-space:nowrap;font-size:12.5px;user-select:none;touch-action:none}
+.hb:hover{background:rgba(255,255,255,.14)}
+.hb:active:not(:disabled){background:rgba(34,211,238,.25)}
+.hb:disabled{opacity:.35;cursor:default}
+.hud-pad{display:inline-flex;gap:3px}
+.hud-pad .hb{padding:5px 6px}
+.hud-aj{font-size:11.5px;color:var(--mudo)}
+#mini{top:82px;left:324px;width:250px;padding:8px 10px 8px}
+.mini-cab{display:flex;justify-content:space-between;align-items:baseline;font-size:11px;font-weight:650;letter-spacing:.7px;text-transform:uppercase;color:var(--mudo);margin-bottom:4px}
+.mini-cab small{font-weight:400;letter-spacing:0;text-transform:none;font-size:11px}
+#miniMapa svg{width:100%;height:auto;display:block}
+
+/* ---------- planta 2D ---------- */
+#plano{top:82px;left:324px;right:364px;bottom:calc(var(--alt-base, 50px) + 22px);display:flex;flex-direction:column;overflow:hidden;background:rgba(16,19,23,.95)}
+.pl-cab{display:flex;align-items:center;gap:8px 10px;padding:10px 12px;border-bottom:1px solid var(--borda);flex-wrap:wrap}
+.pl-tit{display:flex;flex-direction:column;min-width:0;flex:1 1 160px}
+.pl-tit b{font-size:14px;font-weight:650}
+.pl-tit span{font-size:12px;color:var(--mudo);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pl-mapa{display:flex;gap:12px;flex:0 0 38%;min-height:140px;padding:10px 12px 8px;border-bottom:1px solid var(--borda)}
+.pl-leg{flex:0 0 150px;display:flex;flex-direction:column;justify-content:space-between;gap:10px;font-size:11.5px;color:var(--texto-2)}
+.pl-leg .tit{font-size:11px;font-weight:650;letter-spacing:.7px;text-transform:uppercase;color:var(--mudo)}
+.pl-leg .tit small{display:block;font-weight:400;letter-spacing:0;text-transform:none;margin-top:2px;font-size:11.5px}
+.pl-leg .its{display:flex;flex-direction:column;gap:5px}
+.pl-leg .it{display:flex;align-items:center;gap:7px}
+.pl-leg .ico{width:15px;height:15px;font-size:10px}
+.pl-leg .q{width:15px;height:11px;border-radius:3px;flex:none}
+.pl-leg .anel{width:13px;height:13px;border-radius:50%;border:2px solid var(--destaque);flex:none;margin:0 1px}
+.pl-leg .jan{width:15px;height:11px;border-radius:3px;border:2px solid var(--destaque);flex:none}
+.pl-leg .grad{width:100%}
+.pl-svg{flex:1;min-width:0;position:relative}
+.pl-svg svg{position:absolute;inset:0;width:100%;height:100%}
+.pl-elev-cab{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px 0;font-size:13px}
+.pl-elev-cab .mudo{color:var(--mudo);font-size:12px}
+#plEstTit{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pl-elev-cab .bt.prim{padding:4px 11px}
+.pl-nav{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--texto-2)}
+.pl-nav .bt{padding:2px 10px;font-size:14px}
+#elev{flex:1;min-height:0;display:flex;gap:8px;padding:8px 12px 4px}
+.el-eixo{display:grid;grid-template-rows:repeat(7,minmax(0,1fr));padding:5px 0 31px;font-size:11px;color:var(--mudo);width:24px;flex:none}
+.el-eixo span{display:flex;align-items:center}
+.el-mods{flex:1;display:grid;gap:10px;min-width:0}
+.el-mod{display:flex;flex-direction:column;min-width:0;min-height:0}
+.el-grade{flex:1;display:grid;grid-template-rows:repeat(7,minmax(0,1fr));grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:4px;
+  background:#2a3036;border:1px solid rgba(255,255,255,.12);border-radius:6px;min-height:0}
+.el-rot{height:26px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;color:var(--texto-2);white-space:nowrap}
+.el-mod.atual .el-rot{color:var(--destaque);font-weight:650}
+.cel{position:relative;border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;
+  min-height:0;overflow:hidden;line-height:1.15;transition:background-color .3s}
+.cel b{font-size:12.5px;font-weight:700;font-variant-numeric:tabular-nums}
+.cel small{display:none;font-size:11px;opacity:.8;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;padding:0 3px}
+#elev.largo .cel small{display:block}
+.cel .ico{position:absolute;top:3px;right:3px;width:15px;height:15px;font-size:10px;box-shadow:0 0 0 1.5px rgba(17,20,24,.85)}
+.cel .oc{position:absolute;left:5px;right:5px;bottom:3px;height:3px;border-radius:2px;background:rgba(0,0,0,.22)}
+.cel .oc i{display:block;height:100%;border-radius:2px;background:currentColor;opacity:.7}
+#elev.ocup .cel .oc{display:none}
+.cel.real{border:2px dashed var(--destaque)}
+.cel.cursor{outline:2px solid var(--destaque);outline-offset:1px;z-index:1;box-shadow:0 0 0 5px rgba(34,211,238,.3)}
+.cel.apagado{opacity:.35}
+.cel.mov{animation:mov 1s}
+@keyframes mov{0%{filter:brightness(1.7)}100%{filter:none}}
+.pl-teclas{padding:4px 12px 10px;font-size:11.5px;color:var(--mudo);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* desenho da planta (unidades do SVG = decímetros) */
+.pl-svg text,#miniMapa text{font-family:"Segoe UI",system-ui,sans-serif}
+.pl-piso{fill:rgba(255,255,255,.035)}
+.pl-parede{fill:none;stroke:rgba(255,255,255,.35);stroke-width:1.6}
+.pl-porta{fill:#dcebf5}
+.pl-corr{fill:transparent;cursor:pointer}
+.pl-corr:hover{fill:rgba(255,255,255,.05)}
+.pl-corr-txt{fill:rgba(255,255,255,.38);font-size:5.5px;font-weight:650;letter-spacing:.6px;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.pl-corr-num{fill:rgba(255,255,255,.5);font-size:10px;font-weight:800;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.pl-mod{cursor:pointer;stroke:rgba(10,12,15,.55);stroke-width:.6;transition:fill .3s}
+.pl-mod:hover{stroke:#fff;stroke-width:1.2}
+.pl-mod.mov{animation:movMod 1s}
+@keyframes movMod{0%{stroke:#fff;stroke-width:3}100%{stroke-width:.6}}
+.pl-glifo{font-size:3.9px;font-weight:800;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.pl-letra{fill:#1d4f91}
+.pl-letra-txt{fill:#fff;font-size:4.4px;font-weight:800;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.pl-num{fill:var(--mudo);font-size:4.2px;text-anchor:middle;dominant-baseline:central}
+.pl-corrsel{fill:rgba(34,211,238,.10);stroke:var(--destaque);stroke-width:1;pointer-events:none}
+.pl-janela{fill:none;stroke:var(--destaque);stroke-width:1.5;pointer-events:none}
+.pl-cursor{fill:var(--destaque);stroke:#0b0d10;stroke-width:.9;pointer-events:none}
+.pl-proto{fill:none;stroke:var(--destaque);stroke-width:1;pointer-events:none}
+.pl-voce{pointer-events:none}
+.pl-voce path{fill:rgba(34,211,238,.3)}
+.pl-voce circle{fill:var(--destaque);stroke:#0b0d10;stroke-width:1}
 
 @media (max-width:1180px){
   #esq{width:260px}
-  #base{left:284px}
+  #base,#plano,#hudWrap,#mini{left:284px}
   #vistas .opc{display:none}
 }
 </style>
@@ -184,6 +283,7 @@ input[type=range]{width:100%;accent-color:var(--destaque)}
 <body>
 <div id="carregando">Montando o almoxarifado…</div>
 <div id="cena"></div>
+<div id="fade"></div>
 
 <header id="topo" class="painel">
   <div class="marca">
@@ -200,8 +300,13 @@ input[type=range]{width:100%;accent-color:var(--destaque)}
   </div>
   <div id="vistas" class="seg" role="group" aria-label="Vistas">
     <button data-vista="geral" class="ativo">Visão geral</button>
+    <button data-vista="corredor" title="Andar entre as estantes na altura dos olhos">Corredores</button>
     <button data-vista="proto">Caixa protótipo</button>
     <button data-vista="girar" class="opc">Girar</button>
+  </div>
+  <div id="segModoVis" class="seg" role="group" aria-label="Modo de visualização">
+    <button data-mv="3d" class="ativo">3D</button>
+    <button data-mv="2d" title="Planta e estantes em 2D, sem o 3D">Planta 2D</button>
   </div>
   <span class="chip" id="chipTopo"><i></i><span>Protótipo desconectado</span></span>
   <span id="relogio" class="num"></span>
@@ -339,7 +444,42 @@ input[type=range]{width:100%;accent-color:var(--destaque)}
   </div>
 </div>
 
-<div id="dica">Arraste para girar · botão direito para mover · roda para zoom · WASD para andar · clique numa caixa para ver detalhes</div>
+<section id="plano" class="painel" hidden aria-label="Planta 2D">
+  <div class="pl-cab">
+    <div class="pl-tit"><b>Planta 2D</b><span id="plMigalha"></span></div>
+    <span class="ajuda">Corredor</span>
+    <div class="seg" id="plCorr" role="group" aria-label="Corredor"></div>
+    <div class="seg" id="plLado" role="group" aria-label="Estante"><button data-k="0"></button><button data-k="1"></button></div>
+  </div>
+  <div class="pl-mapa">
+    <div class="pl-leg">
+      <div class="tit">Planta das estantes<small>Clique num módulo ou corredor para ir até ele</small></div>
+      <div class="its" id="plLeg"></div>
+    </div>
+    <div class="pl-svg" id="plMapa"></div>
+  </div>
+  <div class="pl-elev-cab">
+    <div id="plEstTit"></div>
+    <div class="pl-nav"><button class="bt" id="plAnt" aria-label="Módulo anterior">‹</button><span id="plJan" class="num"></span><button class="bt" id="plProx" aria-label="Próximo módulo">›</button>
+      <button class="bt prim" id="plVer3D" title="Abre a caixa selecionada no 3D, na altura dos olhos (Enter)">Ver em 3D</button></div>
+  </div>
+  <div id="elev"></div>
+  <div class="pl-teclas"><kbd>←</kbd><kbd>→</kbd> caixas · <kbd>↑</kbd><kbd>↓</kbd> níveis · <kbd>Q</kbd><kbd>E</kbd> corredor · <kbd>Espaço</kbd> outra estante do corredor · <kbd>Enter</kbd> ver em 3D</div>
+</section>
+
+<div id="hudWrap" hidden>
+  <div id="hud" class="painel">
+    <div class="hud-cab"><div class="hud-onde" id="hudOnde"></div><button class="x" id="hudSair" title="Sair do modo corredores (Esc no corredor)" aria-label="Sair">×</button></div>
+    <div class="hud-bts" id="hudBts"></div>
+    <div class="hud-aj" id="hudAj"></div>
+  </div>
+</div>
+<div id="mini" class="painel" hidden>
+  <div class="mini-cab"><span>Planta</span><small>clique para ir</small></div>
+  <div id="miniMapa"></div>
+</div>
+
+<div id="dica">Arraste para girar · roda para zoom · clique numa caixa para ver detalhes · use Corredores ou Planta 2D para percorrer as estantes</div>
 <div id="dica3d"></div>
 <div id="aviso"></div>
 
@@ -362,6 +502,8 @@ const hora = t => new Date(t).toLocaleTimeString('pt-BR');
 const semAcento = s => s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
 const lin = hex => new THREE.Color(hex).convertSRGBToLinear();
 const pesoTxt = g => g >= 1000 ? fmt(g/1000, 2) + ' kg' : fmt(g, g < 10 ? 1 : 0) + ' g';
+const dois = n => String(n).padStart(2, '0');
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 function avisar(msg, ms=5000){ const a=$('#aviso'); a.textContent=msg; a.style.display='block'; clearTimeout(avisar.t); avisar.t=setTimeout(()=>a.style.display='none', ms); }
 function guardar(chave, valor){ try{ localStorage.setItem(chave, JSON.stringify(valor)); }catch(e){} }
 function recuperar(chave){ try{ return JSON.parse(localStorage.getItem(chave)); }catch(e){ return null; } }
@@ -439,7 +581,7 @@ const PROTO_COD = 'A-01-4-2';
    Dados das posições (caixas bin)
    ===================================================================== */
 const bins = [];
-for (const L of LINHAS){
+for (const [li, L] of LINHAS.entries()){
   for (let m = 1; m <= N_MOD; m++){
     const zc = -(m - 0.5) * MW;
     for (let n = 1; n <= N_NIV; n++){
@@ -452,7 +594,7 @@ for (const L of LINHAS){
         const qtd = r < 0.008 ? 0 : r < 0.04 ? rndi(1, Math.max(1, min-1)) : rndi(min, cap);
         const cod = `${L.letra}-${String(m).padStart(2,'0')}-${n}-${p}`;
         bins.push({
-          i: bins.length, cod, letra: L.letra, item, cap, min, qtd, real: false,
+          i: bins.length, cod, letra: L.letra, li, m, n, p, item, cap, min, qtd, real: false,
           pos: new THREE.Vector3(L.xb + L.s*(DEP - BD/2 - 0.01), yTopo, zc + (2-p)*0.31),
           rotY: L.s > 0 ? Math.PI/2 : -Math.PI/2,
           hist: null, ult: Date.now() - rndi(5, 600)*60000,
@@ -468,6 +610,13 @@ PROTO.qtd = 0;
 PROTO.pos.y += PLACA;
 PROTO.hist = [];
 $('#nPos').textContent = fmt(bins.length);
+
+/* Endereço: estante (li), módulo (m), nível (n), posição (p). nav = onde a pessoa está navegando */
+const idxBin = (li, m, n, p) => ((li * N_MOD + m - 1) * N_NIV + n - 1) * N_POS + p - 1;
+const binDe = (li, m, n, p) => bins[idxBin(li, m, n, p)];
+const nav = {li: PROTO.li, m: PROTO.m, n: PROTO.n, p: PROTO.p};
+const binNav = () => binDe(nav.li, nav.m, nav.n, nav.p);
+const moduloEm = z => clamp(Math.floor(-z / MW) + 1, 1, N_MOD);
 
 /* Histórico sintético para os sensores simulados (gerado quando a caixa é aberta) */
 function historico(b){
@@ -729,6 +878,29 @@ faixa(5.2, 3.2, 4.8, 0.07); faixa(5.2, 9.6, 4.8, 0.07); faixa(2.8, 6.4, 0.07, 6.
     p.position.set(L.xb + L.s*DEP/2, 3.0, 0.03); scene.add(p);
     const haste = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.1, 0.03), mat.aco); haste.position.set(L.xb + L.s*DEP/2, 2.78, 0.0); scene.add(haste);
   }
+  // placa de endereço em cada módulo (ex.: C-05), voltada para o corredor
+  {
+    const CW = 128, CH = 64, TAM = 1024;
+    const atlas = texCanvas(TAM, TAM, (x) => {
+      x.textAlign = 'center'; x.textBaseline = 'middle'; x.font = `800 38px ${FONTE}`;
+      LINHAS.forEach((L, li) => { for (let m = 1; m <= N_MOD; m++){
+        x.fillStyle = '#1d4f91'; x.fillRect(li*CW, (m-1)*CH, CW, CH);
+        x.fillStyle = '#fff'; x.fillText(`${L.letra}-${dois(m)}`, li*CW + CW/2, (m-1)*CH + CH/2 + 2);
+      }});
+    });
+    const pos = [], uv = [], W2 = 0.14, H2 = 0.055, yP = 2.54;
+    LINHAS.forEach((L, li) => { for (let m = 1; m <= N_MOD; m++){
+      const xc = L.xb + L.s*(DEP + 0.004), zc = -(m - 0.5)*MW, dz = -L.s*W2;  // dz: "direita" de quem olha a placa
+      const u0 = li*CW/TAM, u1 = (li+1)*CW/TAM, v1 = 1 - (m-1)*CH/TAM, v0 = 1 - m*CH/TAM;
+      const be = [xc, yP - H2, zc - dz], bd = [xc, yP - H2, zc + dz], td = [xc, yP + H2, zc + dz], te = [xc, yP + H2, zc - dz];
+      pos.push(...be, ...bd, ...td, ...be, ...td, ...te);
+      uv.push(u0,v0, u1,v0, u1,v1, u0,v0, u1,v1, u0,v1);
+    }});
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+    scene.add(new THREE.Mesh(g, new THREE.MeshBasicMaterial({map: atlas})));
+  }
   for (const c of CORREDORES){
     const tex = texPlaca([{t:`CORREDOR ${c.n}`, tam:62}, {t:c.l, tam:38, peso:500, alfa:.85}], {fundo:'#f2b20f', cor:'#1b1b1b'});
     for (const r of [0, Math.PI]){
@@ -924,7 +1096,8 @@ function desenharTagProto(){
 /* ---------- pintura das caixas ---------- */
 let modoCor = 'real';
 let filtro = null; // Set de índices que batem com a busca
-let sujo3D = false, sujoUI = true;
+let sujo3D = false, sujoUI = true, sujo2D = true;
+let modo2D = false;
 function corCaixa(b, st){
   if (filtro && !filtro.has(b.i)) return COR_LIN.apagado;
   if (modoCor === 'status') return COR_LIN[st];
@@ -943,7 +1116,7 @@ function pintarBin(b){
   const h = alturaConteudo(b);
   imCont.setMatrixAt(b.i, h ? matrizLocal(b, 0, T, -0.02, BW - 0.035, h, BD - 0.09) : ESCONDIDO);
   imCont.setColorAt(b.i, b.item.corLin);
-  sujo3D = true;
+  sujo3D = sujo2D = true;
 }
 function pintarProto(st = statusDe(PROTO)){
   protoMatBin.color.copy(corCaixa(PROTO, st));
@@ -953,6 +1126,7 @@ function pintarProto(st = statusDe(PROTO)){
   protoCont.scale.set(BW - 0.035, h || 0.001, BD - 0.09);
   protoCont.material.color.copy(PROTO.item.corLin);
   desenharTagProto();
+  sujo2D = true;
 }
 function pintarTudo(){ for (const b of bins) pintarBin(b); }
 pintarTudo();
@@ -976,7 +1150,7 @@ function posicionarContorno(o, b){
 /* ---------- números flutuantes nas movimentações ---------- */
 const flutuantes = [];
 function flutuar(b, texto, cor){
-  if (flutuantes.length > 24) return;
+  if (flutuantes.length > 24 || modo2D) return;
   const sp = new THREE.Sprite(new THREE.SpriteMaterial({depthTest:false, transparent:true,
     map: texCanvas(256, 96, (x,w,h) => { x.font = `800 58px ${FONTE}`; x.textAlign = 'center'; x.textBaseline = 'middle';
       x.lineWidth = 12; x.strokeStyle = 'rgba(10,12,15,.75)'; x.strokeText(texto, w/2, h/2); x.fillStyle = cor; x.fillText(texto, w/2, h/2); })}));
@@ -1003,6 +1177,7 @@ function mover(b, delta, tipo){
   flutuar(b, (delta > 0 ? '+' : '−') + Math.abs(delta), delta > 0 ? '#8fe38f' : '#ffb0a3');
   sujoUI = true;
   if (selecionado === b) atualizarDetalhe();
+  piscar2D(b);
 }
 function registrarEvento(b, delta, tipo){
   const ul = $('#feed');
@@ -1113,6 +1288,7 @@ $('#segVel').addEventListener('click', e => {
 let selecionado = null, hoverSpark = null;
 function selecionar(b){
   selecionado = b;
+  if (b){ nav.li = b.li; nav.m = b.m; nav.n = b.n; nav.p = b.p; sujo2D = true; }
   posicionarContorno(contSel, b); posicionarContorno(volSel, b);
   $('#cardDet').hidden = !b;
   if (b) atualizarDetalhe();
@@ -1183,6 +1359,7 @@ $('#dFechar').addEventListener('click', () => selecionar(null));
    ===================================================================== */
 let voo = null;
 function voarPara(pos, alvo, dur = 1300){
+  sairAndar();
   controls.autoRotate = false;
   for (const x of $('#vistas').children) if (x.dataset.vista === 'girar') x.classList.remove('ativo');
   voo = {p0: camera.position.clone(), a0: controls.target.clone(), p1: pos, a1: alvo, ini: performance.now(), dur};
@@ -1193,9 +1370,14 @@ function vistaBin(b, dist = 1.45){
   const pos = alvo.clone().addScaledVector(frente, dist).add(new THREE.Vector3(0, 0.32, 0.55));
   return [pos, alvo];
 }
-function focarBin(b){ const [p, a] = vistaBin(b); marcarVista(b.real ? 'proto' : ''); voarPara(p, a); selecionar(b); }
+function focarBin(b){
+  if (modo2D){ selecionar(b); render2D(); return; }
+  if (anda.ativo){ irParaEstante(b); return; }
+  const [p, a] = vistaBin(b); marcarVista(b.real ? 'proto' : ''); voarPara(p, a); selecionar(b);
+}
 const VISTAS = {
   geral:    d => voarPara(new THREE.Vector3(9.5, 15.5, 13.5), new THREE.Vector3(-2.2, 0, -4.2), d),
+  corredor: d => anda.ativo ? voltarCorredor() : irCorredor(nav.li >> 1, 1.4, {instantaneo: d === 0}),
   proto:    d => { const [p, a] = vistaBin(PROTO, 1.25); voarPara(p, a, d); selecionar(PROTO); },
 };
 function marcarVista(nome){
@@ -1203,7 +1385,9 @@ function marcarVista(nome){
 }
 $('#vistas').addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b) return;
+  sair2D();
   if (b.dataset.vista === 'girar'){
+    sairAndar();
     if (controls.autoRotate){ controls.autoRotate = false; b.classList.remove('ativo'); return; }
     if (camera.position.y < 6){ marcarVista('geral'); VISTAS.geral(1300); }
     controls.autoRotate = true; b.classList.add('ativo');
@@ -1211,15 +1395,27 @@ $('#vistas').addEventListener('click', e => {
   }
   marcarVista(b.dataset.vista); VISTAS[b.dataset.vista](1300);
 });
-$('#btVer').addEventListener('click', () => { marcarVista('proto'); VISTAS.proto(1300); });
+$('#btVer').addEventListener('click', () => { sair2D(); marcarVista('proto'); VISTAS.proto(1300); });
 
 const teclas = new Set();
-addEventListener('keydown', e => { if (!/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) teclas.add(e.key.toLowerCase()); });
+addEventListener('keydown', e => {
+  if (/INPUT|SELECT|TEXTAREA/.test(document.activeElement?.tagName) || e.ctrlKey || e.metaKey || e.altKey) return;
+  const k = e.key.toLowerCase();
+  const tratar = modo2D ? tecla2D : anda.ativo ? teclaAndar : null;
+  if (tratar && tratar(k, e)){
+    e.preventDefault();
+    if (document.activeElement?.tagName === 'BUTTON') document.activeElement.blur();  // Espaço/Enter não "clicam" no botão
+    return;
+  }
+  if (modo2D) return;
+  if (anda.ativo && k.startsWith('arrow')) e.preventDefault();
+  teclas.add(k);
+});
 addEventListener('keyup', e => teclas.delete(e.key.toLowerCase()));
 addEventListener('blur', () => teclas.clear());
 const _f = new THREE.Vector3(), _r = new THREE.Vector3();
 function andar(dt){
-  if (!teclas.size) return;
+  if (!teclas.size || anda.ativo) return;
   camera.getWorldDirection(_f); _f.y = 0; _f.normalize(); _r.crossVectors(_f, camera.up);
   const v = (teclas.has('shift') ? 6 : 2.6) * dt, mov = new THREE.Vector3();
   if (teclas.has('w') || teclas.has('arrowup')) mov.add(_f);
@@ -1233,7 +1429,7 @@ function andar(dt){
 
 /* ---------- interação com o mouse ---------- */
 const ray = new THREE.Raycaster(), mouse = new THREE.Vector2();
-let mouseMudou = false, hoverBin = null, downXY = null, dicaXY = [0, 0];
+let mouseMudou = false, hoverBin = null, downXY = null, dicaXY = [0, 0], arrasto = null;
 const alvosRay = [imBin, imCont, protoBin, protoCont];
 function binNoMouse(){
   ray.setFromCamera(mouse, camera);
@@ -1242,33 +1438,518 @@ function binNoMouse(){
   if (hit.object === protoBin || hit.object === protoCont) return PROTO;
   return bins[hit.instanceId] || null;
 }
-renderer.domElement.addEventListener('pointermove', e => {
+const tela = renderer.domElement;
+tela.addEventListener('pointermove', e => {
   mouse.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
   mouseMudou = true; dicaXY = [e.clientX, e.clientY];
+  if (arrasto) olharArrastando(e);
 });
-renderer.domElement.addEventListener('pointerleave', () => { hoverBin = null; posicionarContorno(contHover, null); $('#dica3d').style.display = 'none'; });
-renderer.domElement.addEventListener('pointerdown', e => { downXY = [e.clientX, e.clientY]; voo = null; });
-renderer.domElement.addEventListener('pointerup', e => {
-  if (!downXY || Math.hypot(e.clientX - downXY[0], e.clientY - downXY[1]) > 5 || e.button !== 0) return;
+tela.addEventListener('pointerleave', () => { hoverBin = null; posicionarContorno(contHover, null); mostrarDica(null); });
+tela.addEventListener('pointerdown', e => {
+  if (modo2D) return;
+  downXY = [e.clientX, e.clientY]; voo = null;
+  if (anda.ativo && e.button === 0){ arrasto = {x: e.clientX, y: e.clientY, ux: e.clientX, uy: e.clientY, moveu: false}; tela.setPointerCapture(e.pointerId); }
+});
+tela.addEventListener('pointerup', e => {
+  const arrastou = arrasto?.moveu; arrasto = null;
+  if (modo2D || arrastou || !downXY || Math.hypot(e.clientX - downXY[0], e.clientY - downXY[1]) > 5 || e.button !== 0) return;
   mouse.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
-  selecionar(binNoMouse());
+  const b = binNoMouse();
+  if (anda.ativo){ if (b) focarBin(b); }
+  else selecionar(b);
 });
+tela.addEventListener('wheel', e => { if (anda.ativo){ e.preventDefault(); rodaAndar(e.deltaY); } }, {passive: false});
+
+function mostrarDicaHtml(html, x, y){
+  const d = $('#dica3d');
+  if (!html){ d.style.display = 'none'; return; }
+  d.innerHTML = html; d.style.display = 'block';
+  const w = d.offsetWidth, h = d.offsetHeight;
+  d.style.left = Math.min(innerWidth - w - 8, x + 14) + 'px';
+  d.style.top = Math.min(innerHeight - h - 8, y + 14) + 'px';
+}
+function htmlBin(b){
+  const st = statusDe(b);
+  return `<b>${b.cod}</b>${b.real ? ' <span class="tag real">REAL</span>' : ''}<small>${b.item.nome}</small>
+    <small style="margin-top:3px">${icone(st)} ${fmt(b.qtd)} un. · mín. ${fmt(b.min)} · ${STATUS[st].rot}</small>`;
+}
+const mostrarDica = (b, x = dicaXY[0], y = dicaXY[1]) => mostrarDicaHtml(b && htmlBin(b), x, y);
 function atualizarHover(){
   if (!mouseMudou) return; mouseMudou = false;
-  const b = binNoMouse();
+  const b = arrasto?.moveu ? null : binNoMouse();
   hoverBin = b;
   posicionarContorno(contHover, b);
-  renderer.domElement.style.cursor = b ? 'pointer' : '';
-  const d = $('#dica3d');
-  if (!b){ d.style.display = 'none'; return; }
-  const st = statusDe(b);
-  d.innerHTML = `<b>${b.cod}</b>${b.real ? ' <span class="tag real">REAL</span>' : ''}<small>${b.item.nome}</small>
-    <small style="margin-top:3px">${icone(st)} ${fmt(b.qtd)} un. · mín. ${fmt(b.min)} · ${STATUS[st].rot}</small>`;
-  d.style.display = 'block';
-  const w = d.offsetWidth, h = d.offsetHeight;
-  d.style.left = Math.min(innerWidth - w - 8, dicaXY[0] + 14) + 'px';
-  d.style.top = Math.min(innerHeight - h - 8, dicaXY[1] + 14) + 'px';
+  tela.style.cursor = arrasto?.moveu ? 'grabbing' : b ? 'pointer' : anda.ativo ? 'grab' : '';
+  mostrarDica(b);
 }
+
+/* =====================================================================
+   Navegação por corredores e estantes
+   - "Corredores": 3D na altura dos olhos, preso ao eixo do corredor
+   - "Planta 2D": planta vista de cima + frente da estante, sem o 3D
+   As duas compartilham a posição atual (nav).
+   ===================================================================== */
+const OLHO = 1.6, Z_MAX = 2.2, Z_MIN = -15.2, DIST_ESTANTE = 1.5, FOV_NORMAL = 55, FOV_ANDAR = 68;
+camera.rotation.order = 'YXZ';
+const anda = {ativo: false, estado: 'corredor', c: 0, x: 0, y: 0, z: 0, yaw: 0, pitch: 0,
+  xA: 0, yA: 0, zA: 0, yawA: 0, pitchA: 0, yawCorr: 0, taxa: 7};
+const difAng = a => Math.atan2(Math.sin(a), Math.cos(a));
+const paraFundo = () => Math.cos(anda.yawA) >= 0;  // olhando para o fundo do corredor (−z)?
+function atualizarControles(){ controls.enabled = !modo2D && !anda.ativo; }
+
+function iniciarAndar(){
+  if (anda.ativo) return false;
+  camera.getWorldDirection(_f);
+  Object.assign(anda, {ativo: true, x: camera.position.x, y: camera.position.y, z: camera.position.z,
+    yaw: Math.atan2(-_f.x, -_f.z), pitch: Math.asin(clamp(_f.y, -1, 1)), taxa: 3.2});
+  voo = null; controls.autoRotate = false; atualizarControles();
+  for (const x of $('#vistas').children) if (x.dataset.vista === 'girar') x.classList.remove('ativo');
+  marcarVista('corredor');
+  $('#dica').style.opacity = 0;
+  mostrarInterfaceAndar();
+  return true;
+}
+function sairAndar(){
+  if (!anda.ativo) return;
+  anda.ativo = false; arrasto = null; teclas.clear();
+  camera.getWorldDirection(_f);
+  controls.target.copy(camera.position).addScaledVector(_f, 1.5);
+  atualizarControles(); mostrarInterfaceAndar();
+  tela.style.cursor = '';
+}
+function mostrarInterfaceAndar(){
+  const v = anda.ativo && !modo2D;
+  $('#hudWrap').hidden = $('#mini').hidden = !v;
+  if (v){ hud.onde = hud.bts = hud.aj = ''; calcularResumo(); pintarPlanta(plMini); }
+}
+function encaixar(){ Object.assign(anda, {x: anda.xA, y: anda.yA, z: anda.zA, yaw: anda.yawA, pitch: anda.pitchA, taxa: 7}); }
+function irCorredor(c, z, {instantaneo = false, yaw} = {}){
+  const novo = iniciarAndar();
+  if (yaw == null) yaw = novo ? 0 : anda.estado === 'estante' ? anda.yawCorr : anda.yawA;
+  Object.assign(anda, {estado: 'corredor', c, xA: CORREDORES[c].x, yA: OLHO, zA: clamp(z, Z_MIN, Z_MAX), yawA: yaw, pitchA: -0.08});
+  if (instantaneo) encaixar();
+}
+function irEstante(b, {instantaneo = false} = {}){
+  iniciarAndar();
+  if (anda.estado === 'corredor') anda.yawCorr = anda.yawA;
+  anda.estado = 'estante';
+  selecionar(b);   // também move nav para a caixa
+  mirarEstante();
+  if (instantaneo) encaixar();
+}
+// câmera de frente para a caixa atual, no meio do corredor
+function mirarEstante(){
+  const b = binNav(), L = LINHAS[nav.li], face = L.xb + L.s*DEP;
+  anda.c = nav.li >> 1;
+  anda.xA = face + L.s*DIST_ESTANTE; anda.yA = 1.5;
+  anda.zA = b.pos.z*0.6 - (nav.m - 0.5)*MW*0.4;
+  anda.yawA = L.s > 0 ? Math.PI/2 : -Math.PI/2;
+  anda.pitchA = Math.atan2(b.pos.y + BH/2 - anda.yA, DIST_ESTANTE) * 0.75;
+}
+const voltarCorredor = () => irCorredor(anda.c, anda.z);
+function transicao(fn){
+  $('#fade').classList.add('on');
+  setTimeout(() => { fn(); $('#fade').classList.remove('on'); }, 190);
+}
+function irParaEstante(b){
+  const longe = (b.li >> 1) !== anda.c || Math.abs(b.pos.z - anda.z) > 5;
+  longe ? transicao(() => irEstante(b, {instantaneo: true})) : irEstante(b);
+}
+function trocarCorredor(d){
+  const c2 = clamp(anda.c + d, 0, CORREDORES.length - 1);
+  if (c2 === anda.c) return;
+  transicao(() => {
+    if (anda.estado === 'estante'){ nav.li = 2*c2 + (nav.li & 1); irEstante(binNav(), {instantaneo: true}); }
+    else irCorredor(c2, anda.z, {instantaneo: true});
+  });
+}
+function olharLado(lado){  // −1 = estante à esquerda de quem está no corredor, +1 = à direita
+  const li = 2*anda.c + ((lado < 0) === paraFundo() ? 0 : 1);
+  irEstante(binDe(li, moduloEm(anda.z), nav.n, 2));
+}
+
+/* cursor na estante: colunas = módulo × posição, linhas = níveis */
+function moverCursor(dc, dn){
+  const col = clamp((nav.m - 1)*N_POS + nav.p - 1 + dc, 0, N_MOD*N_POS - 1);
+  nav.m = Math.floor(col / N_POS) + 1; nav.p = col % N_POS + 1;
+  nav.n = clamp(nav.n + dn, 1, N_NIV);
+  aoMudarNav();
+}
+// no 3D as setas seguem a tela: olhando para −x os módulos crescem para a direita, olhando para +x para a esquerda
+const moverCursorTela = d => moverCursor(d * LINHAS[nav.li].s, 0);
+function aoMudarNav(){
+  selecionar(binNav());
+  if (modo2D) render2D();
+  else if (anda.ativo && anda.estado === 'estante') mirarEstante();
+}
+function virarEstante(){ nav.li ^= 1; aoMudarNav(); }
+
+function teclaAndar(k, e){
+  const seta = {arrowleft: -1, a: -1, arrowright: 1, d: 1}[k];
+  if (k === 'q' || k === 'e'){ if (!e.repeat) trocarCorredor(k === 'q' ? -1 : 1); return true; }
+  if (anda.estado === 'corredor'){
+    if (seta){ if (!e.repeat) olharLado(seta); return true; }
+    if (k === 'escape'){ marcarVista('geral'); VISTAS.geral(1300); return true; }
+    return false;  // ↑ ↓ W S ficam pressionadas para andar
+  }
+  if (seta){ moverCursorTela(seta); return true; }
+  if (k === 'arrowup' || k === 'w'){ moverCursor(0, 1); return true; }
+  if (k === 'arrowdown' || k === 's'){ moverCursor(0, -1); return true; }
+  if (k === ' ' || k === 't'){ if (!e.repeat) virarEstante(); return true; }
+  if (k === 'escape' || k === 'backspace'){ voltarCorredor(); return true; }
+  return false;
+}
+function olharArrastando(e){
+  if (!arrasto.moveu){
+    if (Math.hypot(e.clientX - arrasto.x, e.clientY - arrasto.y) < 5) return;
+    arrasto.moveu = true;
+    if (anda.estado === 'estante'){ anda.estado = 'corredor'; anda.xA = CORREDORES[anda.c].x; anda.yA = OLHO; }
+  }
+  anda.yawA += (e.clientX - arrasto.ux) * 0.0045;
+  anda.pitchA = clamp(anda.pitchA + (e.clientY - arrasto.uy) * 0.0045, -1.2, 1.2);
+  arrasto.ux = e.clientX; arrasto.uy = e.clientY;
+}
+let rodaAc = 0;
+function rodaAndar(dy){
+  if (anda.estado === 'corredor'){
+    anda.zA = clamp(anda.zA + clamp(dy, -120, 120) / 120 * 0.8 * (paraFundo() ? 1 : -1), Z_MIN, Z_MAX);
+    return;
+  }
+  rodaAc += dy;
+  if (Math.abs(rodaAc) >= 80){ moverCursorTela(Math.sign(rodaAc) * N_POS); rodaAc = 0; }
+}
+function atualizarAndar(dt){
+  if (anda.estado === 'corredor'){
+    let v = 0;
+    if (teclas.has('w') || teclas.has('arrowup') || teclas.has('hud-frente')) v++;
+    if (teclas.has('s') || teclas.has('arrowdown') || teclas.has('hud-tras')) v--;
+    if (v) anda.zA = clamp(anda.zA + v * (paraFundo() ? -1 : 1) * (teclas.has('shift') ? 5.5 : 2.4) * dt, Z_MIN, Z_MAX);
+  }
+  const k = 1 - Math.exp(-dt * anda.taxa), ka = 1 - Math.exp(-dt * anda.taxa * 1.5);
+  anda.x += (anda.xA - anda.x) * k; anda.y += (anda.yA - anda.y) * k; anda.z += (anda.zA - anda.z) * k;
+  anda.yaw += difAng(anda.yawA - anda.yaw) * ka; anda.pitch += (anda.pitchA - anda.pitch) * ka;
+  if (anda.taxa < 7 && Math.hypot(anda.x - anda.xA, anda.y - anda.yA, anda.z - anda.zA) < 0.1) anda.taxa = 7;
+  camera.position.set(anda.x, anda.y, anda.z);
+  camera.rotation.set(anda.pitch, anda.yaw, 0);
+  plMini.voce.setAttribute('transform', `translate(${pu(-anda.z)} ${pu(anda.x)}) rotate(${(-anda.yaw * 180 / Math.PI).toFixed(1)})`);
+  atualizarHud();
+}
+
+/* ---------- painel de comandos do modo corredores ---------- */
+const hud = {onde: '', bts: '', aj: ''};
+const botaoHud = (a, tecla, rot = '', desab = false) =>
+  `<button class="hb" data-a="${a}"${desab ? ' disabled' : ''} title="${rot || tecla}"><kbd>${tecla}</kbd>${rot}</button>`;
+function atualizarHud(){
+  const c = anda.c, A = LINHAS[2*c], B = LINHAS[2*c + 1], ult = CORREDORES.length - 1;
+  const ant = botaoHud('q', 'Q', c > 0 ? `‹ Corredor ${c}` : '‹ Corredor', c === 0);
+  const prox = botaoHud('e', 'E', c < ult ? `Corredor ${c + 2} ›` : 'Corredor ›', c === ult);
+  let onde, bts, aj;
+  if (anda.estado === 'corredor'){
+    const esq = paraFundo() ? A : B, dir = paraFundo() ? B : A;
+    const trecho = anda.z > 0.05 ? 'entrada do corredor' : anda.z < -N_MOD*MW ? 'fundo do corredor' : `altura do módulo ${dois(moduloEm(anda.z))}`;
+    onde = `<b>Corredor ${c + 1}</b><span>Estantes ${A.letra} e ${B.letra} · ${trecho}</span>`;
+    bts = ant + botaoHud('esq', '←', `Estante ${esq.letra}`) + botaoHud('frente', '↑', 'Andar') + botaoHud('tras', '↓', 'Voltar')
+        + botaoHud('dir', '→', `Estante ${dir.letra}`) + prox;
+    aj = 'Segure ↑ para andar (Shift corre) · arraste para olhar em volta · clique numa caixa para ir até ela';
+  } else {
+    const b = binNav(), st = statusDe(b), outra = LINHAS[nav.li ^ 1];
+    const q = b.real && !proto.online ? STATUS.offline.rot : `${fmt(b.qtd)} un.`;
+    onde = `<b>${b.cod}</b><span>${icone(st)} ${q} · ${b.item.nome}</span>`;
+    bts = `<span class="hud-pad">${botaoHud('cesq', '←')}${botaoHud('cima', '↑')}${botaoHud('baixo', '↓')}${botaoHud('cdir', '→')}</span>`
+        + botaoHud('virar', 'Espaço', `Virar para a estante ${outra.letra}`) + botaoHud('voltar', 'Esc', 'Olhar o corredor') + ant + prox;
+    aj = `Estante ${LINHAS[nav.li].letra} · módulo ${dois(nav.m)} · nível ${nav.n} · posição ${nav.p} — ← → troca de caixa, ↑ ↓ de nível`;
+  }
+  if (onde !== hud.onde) $('#hudOnde').innerHTML = hud.onde = onde;
+  if (bts !== hud.bts) $('#hudBts').innerHTML = hud.bts = bts;
+  if (aj !== hud.aj) $('#hudAj').textContent = hud.aj = aj;
+}
+const ACOES_HUD = {
+  q: () => trocarCorredor(-1), e: () => trocarCorredor(1), esq: () => olharLado(-1), dir: () => olharLado(1),
+  cesq: () => moverCursorTela(-1), cdir: () => moverCursorTela(1), cima: () => moverCursor(0, 1), baixo: () => moverCursor(0, -1),
+  virar: virarEstante, voltar: voltarCorredor,
+};
+$('#hud').addEventListener('mousedown', e => e.preventDefault());  // não rouba o foco do teclado
+$('#hudBts').addEventListener('pointerdown', e => {
+  const b = e.target.closest('.hb'); if (!b || b.disabled) return;
+  const a = b.dataset.a;
+  if (a === 'frente' || a === 'tras'){ teclas.add('hud-' + a); b.setPointerCapture(e.pointerId); return; }
+  ACOES_HUD[a]?.();
+});
+const soltarHud = () => { teclas.delete('hud-frente'); teclas.delete('hud-tras'); };
+$('#hudBts').addEventListener('pointerup', soltarHud);
+$('#hudBts').addEventListener('pointercancel', soltarHud);
+$('#hudSair').addEventListener('click', () => { marcarVista('geral'); VISTAS.geral(1300); });
+
+/* ---------- planta (SVG). x do SVG = −z do mundo (módulo 01 à esquerda), y do SVG = x do mundo (estante A no alto) ---------- */
+const PL = 10;  // unidades do SVG por metro
+const pu = v => Math.round(v * PL * 10) / 10;
+const attrs = (el, o) => { for (const k in o) el.setAttribute(k, o[k]); };
+const hexLin = c => '#' + c.clone().convertLinearToSRGB().getHexString();
+const _tinta = new Map();
+function tinta(hex){  // texto escuro ou branco, o que tiver mais contraste com o fundo
+  if (!_tinta.has(hex)){
+    const c = new THREE.Color(hex).convertSRGBToLinear(), L = 0.2126*c.r + 0.7152*c.g + 0.0722*c.b;
+    _tinta.set(hex, (L + 0.05) / 0.05 >= 1.05 / (L + 0.05) ? '#111418' : '#ffffff');
+  }
+  return _tinta.get(hex);
+}
+function criarPlanta(cont, mini){
+  const r = (x, y, w, h, a = '') => `<rect x="${pu(x)}" y="${pu(y)}" width="${pu(w)}" height="${pu(h)}" ${a}/>`;
+  const t = (x, y, txt, cls, a = '') => `<text x="${pu(x)}" y="${pu(y)}" class="${cls}" ${a}>${txt}</text>`;
+  const yFim = 1.9;
+  let s = `<svg viewBox="${[-2.6, PREDIO.x0 - 0.25, 18.95, yFim - PREDIO.x0 + 0.3].map(pu).join(' ')}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Planta das estantes">`;
+  s += r(-2.6, PREDIO.x0, 2.6 - PREDIO.z0, yFim - PREDIO.x0, 'class="pl-piso"');
+  s += `<path class="pl-parede" d="M${pu(-2.6)} ${pu(PREDIO.x0)}H${pu(-PREDIO.z0)}V${pu(yFim)}"/>`;
+  s += r(-PREDIO.z0 - 0.15, -10.1, 0.3, 1.8, 'class="pl-porta"');
+  CORREDORES.forEach((C, c) => {
+    const y1 = LINHAS[2*c].xb + DEP, y2 = LINHAS[2*c + 1].xb - DEP;
+    s += r(-Z_MAX, y1, Z_MAX - Z_MIN, y2 - y1, `class="pl-corr" data-c="${c}"`);
+  });
+  s += `<rect class="pl-corrsel"/>`;
+  CORREDORES.forEach(C => s += mini ? t(14.6, C.x, C.n, 'pl-corr-num') : t(N_MOD*MW/2, C.x, `CORREDOR ${C.n}`, 'pl-corr-txt'));
+  LINHAS.forEach((L, li) => {
+    const y0 = Math.min(L.xb, L.xb + L.s*DEP);
+    for (let m = 1; m <= N_MOD; m++) s += r((m-1)*MW + 0.05, y0 + 0.02, MW - 0.1, DEP - 0.04, 'class="pl-mod"');
+    if (!mini){
+      for (let m = 1; m <= N_MOD; m++) s += t(m - 0.5, y0 + DEP/2, '', 'pl-glifo');
+      s += r(-0.72, y0 + 0.02, 0.56, 0.46, 'class="pl-letra" rx="1"') + t(-0.44, y0 + DEP/2, L.letra, 'pl-letra-txt');
+    }
+  });
+  if (!mini){
+    for (let m = 1; m <= N_MOD; m++) s += t(m - 0.5, 1.45, dois(m), 'pl-num');
+    s += t(-0.15, 1.45, 'Módulo', 'pl-num', 'style="text-anchor:end"');
+    s += `<rect class="pl-janela" rx="${pu(0.08)}"/>`;
+  }
+  s += `<circle class="pl-proto" cx="${pu(-PROTO.pos.z)}" cy="${pu(PROTO.pos.x)}" r="${pu(0.3)}"/><circle class="pl-cursor" r="${pu(0.17)}"/>`;
+  if (mini) s += `<g class="pl-voce"><path d="M0 0L${pu(2.6)} ${pu(-1.6)}A${pu(3.05)} ${pu(3.05)} 0 0 1 ${pu(2.6)} ${pu(1.6)}Z"/><circle r="${pu(0.32)}"/></g>`;
+  cont.insertAdjacentHTML('beforeend', s + '</svg>');
+  const svg = cont.querySelector('svg'), q = sel => svg.querySelector(sel);
+  return {svg, mini, mods: [...svg.querySelectorAll('.pl-mod')], glifos: mini ? null : [...svg.querySelectorAll('.pl-glifo')],
+    corrsel: q('.pl-corrsel'), janela: q('.pl-janela'), cursor: q('.pl-cursor'), voce: q('.pl-voce')};
+}
+
+/* resumo por módulo (21 caixas cada): usado nas cores da planta e nas dicas */
+const resumo = Array.from({length: LINHAS.length * N_MOD}, () => ({z: 0, bx: 0, oc: 0, ach: 0}));
+function calcularResumo(){
+  for (let k = 0; k < resumo.length; k++){
+    const r = resumo[k]; r.z = r.bx = r.oc = r.ach = 0;
+    for (let j = k * N_NIV * N_POS, fim = j + N_NIV * N_POS; j < fim; j++){
+      const b = bins[j], st = statusDe(b);
+      if (st === 'zerado') r.z++; else if (st === 'baixo') r.bx++;
+      r.oc += Math.min(1, b.qtd / b.cap);
+      if (filtro && filtro.has(b.i)) r.ach++;
+    }
+  }
+}
+const COR_MOD_OK = '#59626c', COR_APAGADO_2D = '#2c3238';
+function corModulo(r){
+  if (filtro) return r.ach ? COR.destaque : COR_APAGADO_2D;
+  if (modoCor === 'ocup') return hexLin(rampa(r.oc / (N_NIV * N_POS)));
+  if (r.z) return COR.zerado;
+  if (r.bx) return COR.baixo;
+  return modoCor === 'status' ? COR.ok : COR_MOD_OK;
+}
+function pintarPlanta(pl){
+  resumo.forEach((r, k) => {
+    const cor = corModulo(r), el = pl.mods[k];
+    if (el._cor !== cor){ el.setAttribute('fill', cor); el._cor = cor; }
+    if (pl.glifos){
+      const g = pl.glifos[k], txt = filtro ? (r.ach ? String(r.ach) : '') : modoCor === 'ocup' ? '' : r.z ? '✕' : r.bx ? '!' : '';
+      if (g.textContent !== txt) g.textContent = txt;
+      g.setAttribute('fill', tinta(cor));
+    }
+  });
+  const c = pl.mini && anda.ativo ? anda.c : nav.li >> 1;
+  const y1 = LINHAS[2*c].xb + DEP, y2 = LINHAS[2*c + 1].xb - DEP;
+  attrs(pl.corrsel, {x: pu(-Z_MAX), y: pu(y1), width: pu(Z_MAX - Z_MIN), height: pu(y2 - y1), rx: pu(0.15)});
+  const b = binNav();
+  pl.cursor.style.display = !pl.mini || anda.estado === 'estante' ? '' : 'none';
+  attrs(pl.cursor, {cx: pu(-b.pos.z), cy: pu(b.pos.x)});
+  if (pl.janela){
+    const L = LINHAS[nav.li], y0 = Math.min(L.xb, L.xb + L.s*DEP);
+    attrs(pl.janela, {x: pu((elev.m0 - 1)*MW - 0.02), y: pu(y0 - 0.1), width: pu(elev.K*MW + 0.04), height: pu(DEP + 0.2)});
+  }
+}
+function alvoPlanta(wx, wz){
+  if (wz <= 0.02 && wz >= -N_MOD*MW - 0.02){
+    for (let li = 0; li < LINHAS.length; li++){
+      const L = LINHAS[li], a = Math.min(L.xb, L.xb + L.s*DEP), b = Math.max(L.xb, L.xb + L.s*DEP);
+      if (wx >= a - 0.04 && wx <= b + 0.04) return {li, m: moduloEm(wz)};
+    }
+  }
+  for (let c = 0; c < CORREDORES.length; c++){
+    if (wx > LINHAS[2*c].xb + DEP && wx < LINHAS[2*c + 1].xb - DEP && wz <= Z_MAX && wz >= Z_MIN) return {c, z: wz};
+  }
+  return null;
+}
+function htmlAlvo(a){
+  if (a.c != null){
+    const A = LINHAS[2*a.c], B = LINHAS[2*a.c + 1];
+    return `<b>Corredor ${a.c + 1}</b><small>Estantes ${A.letra} e ${B.letra} · clique para ir</small>`;
+  }
+  const r = resumo[a.li * N_MOD + a.m - 1], L = LINHAS[a.li], partes = [];
+  if (r.z) partes.push(`${icone('zerado')} ${r.z} sem estoque`);
+  if (r.bx) partes.push(`${icone('baixo')} ${r.bx} abaixo do mín.`);
+  if (!partes.length) partes.push(`${icone('ok')} nenhum alerta`);
+  const real = PROTO.li === a.li && PROTO.m === a.m ? ' <span class="tag real">PROTO-01</span>' : '';
+  return `<b>${L.letra}-${dois(a.m)}</b>${real}<small>Estante ${L.letra}, módulo ${dois(a.m)} · 21 caixas · ocupação média ${fmt(r.oc / (N_NIV*N_POS) * 100)}%</small>
+    ${filtro ? `<small>${r.ach} resultado(s) da busca</small>` : ''}<small style="margin-top:3px">${partes.join(' · ')}</small>`;
+}
+function ligarPlanta(pl, aoEscolher){
+  const alvo = e => {
+    const pt = pl.svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
+    const p = pt.matrixTransform(pl.svg.getScreenCTM().inverse());
+    return alvoPlanta(p.y / PL, -p.x / PL);
+  };
+  pl.svg.addEventListener('click', e => { const a = alvo(e); if (a) aoEscolher(a); });
+  pl.svg.addEventListener('mousemove', e => { const a = alvo(e); pl.svg.style.cursor = a ? 'pointer' : ''; mostrarDicaHtml(a && htmlAlvo(a), e.clientX, e.clientY); });
+  pl.svg.addEventListener('mouseleave', () => mostrarDicaHtml(null));
+}
+const plGrande = criarPlanta($('#plMapa'), false);
+const plMini = criarPlanta($('#miniMapa'), true);
+ligarPlanta(plGrande, a => {
+  if (a.li != null){ nav.li = a.li; nav.m = a.m; }
+  else { nav.li = 2*a.c + (nav.li & 1); if (a.z <= 0 && a.z >= -N_MOD*MW) nav.m = moduloEm(a.z); }
+  aoMudarNav();
+});
+ligarPlanta(plMini, a => {
+  if (a.li != null) irParaEstante(binDe(a.li, a.m, nav.n, 2));
+  else if (a.c !== anda.c) transicao(() => irCorredor(a.c, a.z, {instantaneo: true}));
+  else irCorredor(a.c, a.z);
+});
+
+/* ---------- planta 2D: frente da estante ---------- */
+const elev = {K: 0, m0: 1, li: -1, cels: new Map(), mods: []};
+function construirElev(){
+  const el = $('#elev');
+  let h = `<div class="el-eixo">${[7,6,5,4,3,2,1].map(n => `<span title="Nível ${n}">N${n}</span>`).join('')}</div>
+    <div class="el-mods" style="grid-template-columns:repeat(${elev.K},minmax(0,1fr))">`;
+  for (let m = elev.m0; m < elev.m0 + elev.K; m++){
+    h += `<div class="el-mod" data-m="${m}"><div class="el-grade">`;
+    for (let n = N_NIV; n >= 1; n--) for (let p = 1; p <= N_POS; p++){
+      h += `<div class="cel" data-i="${binDe(elev.li, m, n, p).i}"><b></b><small></small><span class="ico" hidden></span><i class="oc"><i></i></i></div>`;
+    }
+    const real = PROTO.li === elev.li && PROTO.m === m ? ' <span class="tag real">PROTO-01</span>' : '';
+    h += `</div><div class="el-rot">Módulo ${dois(m)}${real}</div></div>`;
+  }
+  el.innerHTML = h + '</div>';
+  elev.cels.clear();
+  for (const c of el.querySelectorAll('.cel')) elev.cels.set(+c.dataset.i, c);
+  elev.mods = [...el.querySelectorAll('.el-mod')];
+}
+function corCelula(b, st){
+  if (filtro && !filtro.has(b.i)) return COR_APAGADO_2D;
+  if (modoCor === 'status') return COR[st];
+  if (modoCor === 'ocup') return hexLin(rampa(b.qtd / b.cap));
+  return COR.bin;
+}
+function render2D(reconstruir = false){
+  const c = nav.li >> 1, L = LINHAS[nav.li];
+  for (const x of $('#plCorr').children) x.classList.toggle('ativo', +x.dataset.c === c);
+  [...$('#plLado').children].forEach((x, k) => { x.textContent = `Estante ${LINHAS[2*c + k].letra}`; x.classList.toggle('ativo', 2*c + k === nav.li); });
+  // quantos módulos cabem na largura (cada um com 3 caixas)
+  const K = clamp(Math.floor(($('#elev').clientWidth - 56) / 175), 1, N_MOD);
+  let m0 = elev.m0;
+  if (nav.m < m0) m0 = nav.m;
+  if (nav.m > m0 + K - 1) m0 = nav.m - K + 1;
+  m0 = clamp(m0, 1, N_MOD - K + 1);
+  if (reconstruir || K !== elev.K || m0 !== elev.m0 || nav.li !== elev.li){ Object.assign(elev, {K, m0, li: nav.li}); construirElev(); }
+  const c0 = elev.cels.values().next().value;
+  $('#elev').classList.toggle('largo', !!c0 && c0.clientWidth >= 62 && c0.clientHeight >= 40);
+  $('#plMigalha').textContent = `Corredor ${c + 1} › Estante ${L.letra} › Módulo ${dois(nav.m)} › Nível ${nav.n} › Posição ${nav.p}`;
+  $('#plEstTit').innerHTML = `<b>Estante ${L.letra}</b> <span class="mudo">· frente voltada para o corredor ${c + 1} · nível 7 no alto</span>`;
+  $('#plJan').textContent = K >= N_MOD ? `Módulos 01–${N_MOD}` : `Módulos ${dois(m0)}–${dois(m0 + K - 1)} de ${N_MOD}`;
+  $('#plAnt').disabled = nav.m <= 1; $('#plProx').disabled = nav.m >= N_MOD;
+  pintar2D();
+}
+let legPlanta = '';
+function pintar2D(){
+  sujo2D = false;
+  calcularResumo();
+  pintarPlanta(plGrande);
+  const cur = binNav();
+  $('#elev').classList.toggle('ocup', modoCor === 'ocup');
+  for (const [i, c] of elev.cels){
+    const b = bins[i], st = statusDe(b), fundo = corCelula(b, st), alerta = st !== 'ok';
+    c.style.backgroundColor = fundo; c.style.color = tinta(fundo);
+    c.children[0].textContent = b.real && !proto.online ? '—' : fmt(b.qtd);
+    c.children[1].textContent = b.item.sku;
+    const ic = c.children[2];
+    ic.hidden = !alerta;
+    if (alerta){ ic.className = `ico ${st}`; ic.textContent = STATUS[st].ico; }
+    c.children[3].firstChild.style.width = Math.min(100, b.qtd / b.cap * 100) + '%';
+    c.classList.toggle('cursor', b === cur);
+    c.classList.toggle('real', b.real);
+    c.classList.toggle('apagado', !!filtro && !filtro.has(b.i));
+  }
+  for (const md of elev.mods) md.classList.toggle('atual', +md.dataset.m === nav.m);
+  // legenda da planta acompanha o modo de cores e a busca
+  let leg;
+  if (filtro) leg = `<span class="it"><i class="q" style="background:${COR.destaque}"></i>Tem resultado da busca</span><span class="it"><i class="q" style="background:${COR_APAGADO_2D}"></i>Sem resultado</span>`;
+  else if (modoCor === 'ocup') leg = `<span class="it">Ocupação média do módulo</span><span class="grad"></span><span class="it" style="justify-content:space-between"><span>0%</span><span>100%</span></span>`;
+  else leg = `<span class="it"><i class="q" style="background:${modoCor === 'status' ? COR.ok : COR_MOD_OK}"></i>Sem alertas</span>`
+    + `<span class="it">${icone('baixo')}Abaixo do mínimo</span><span class="it">${icone('zerado')}Sem estoque</span>`;
+  leg += `<span class="it"><i class="anel"></i>PROTO-01 (real)</span><span class="it"><i class="jan"></i>Trecho mostrado abaixo</span>`;
+  if (leg !== legPlanta) $('#plLeg').innerHTML = legPlanta = leg;
+}
+function piscar(el){
+  if (!el) return;
+  el.classList.remove('mov'); void el.getBoundingClientRect(); el.classList.add('mov');
+  clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('mov'), 1000);
+}
+function piscar2D(b){
+  const k = b.li * N_MOD + b.m - 1;
+  if (modo2D){ piscar(elev.cels.get(b.i)); piscar(plGrande.mods[k]); }
+  else if (anda.ativo) piscar(plMini.mods[k]);
+}
+setInterval(() => {
+  if (!sujo2D) return;
+  if (modo2D) pintar2D();
+  else if (anda.ativo){ sujo2D = false; calcularResumo(); pintarPlanta(plMini); }
+}, 400);
+
+function entrar2D(){
+  if (modo2D) return;
+  modo2D = true; controls.autoRotate = false; teclas.clear(); atualizarControles();
+  for (const x of $('#vistas').children) if (x.dataset.vista === 'girar') x.classList.remove('ativo');
+  $('#plano').hidden = false; $('#dica').style.opacity = 0; mostrarDicaHtml(null);
+  mostrarInterfaceAndar(); marcarModoVis();
+  render2D(true);
+}
+function sair2D(){
+  if (!modo2D) return;
+  modo2D = false; $('#plano').hidden = true; mostrarDicaHtml(null);
+  atualizarControles(); marcarModoVis();
+  if (anda.ativo && anda.estado === 'estante'){ mirarEstante(); encaixar(); }
+  mostrarInterfaceAndar();
+}
+function marcarModoVis(){ for (const x of $('#segModoVis').children) x.classList.toggle('ativo', (x.dataset.mv === '2d') === modo2D); }
+function ver3D(){ sair2D(); irEstante(binNav(), {instantaneo: true}); }
+function mudarCorredor2D(d){ nav.li = 2*clamp((nav.li >> 1) + d, 0, CORREDORES.length - 1) + (nav.li & 1); aoMudarNav(); }
+function tecla2D(k, e){
+  const seta = {arrowleft: -1, a: -1, arrowright: 1, d: 1}[k];
+  if (seta){ moverCursor(seta, 0); return true; }
+  if (k === 'arrowup' || k === 'w'){ moverCursor(0, 1); return true; }
+  if (k === 'arrowdown' || k === 's'){ moverCursor(0, -1); return true; }
+  if (k === 'q' || k === 'e'){ mudarCorredor2D(k === 'q' ? -1 : 1); return true; }
+  if (k === ' ' || k === 't'){ if (!e.repeat) virarEstante(); return true; }
+  if (k === 'pageup' || k === 'pagedown'){ moverCursor(k === 'pageup' ? -N_POS : N_POS, 0); return true; }
+  if (k === 'enter'){ ver3D(); return true; }
+  return false;
+}
+$('#plCorr').innerHTML = CORREDORES.map((C, c) => `<button data-c="${c}">${C.n}</button>`).join('');
+$('#plCorr').addEventListener('click', e => { const b = e.target.closest('button'); if (b) mudarCorredor2D(+b.dataset.c - (nav.li >> 1)); });
+$('#plLado').addEventListener('click', e => { const b = e.target.closest('button'); if (b){ nav.li = 2*(nav.li >> 1) + +b.dataset.k; aoMudarNav(); } });
+$('#plAnt').addEventListener('click', () => moverCursor(-N_POS, 0));
+$('#plProx').addEventListener('click', () => moverCursor(N_POS, 0));
+$('#plVer3D').addEventListener('click', ver3D);
+// a barra inferior quebra em duas linhas em telas estreitas: os painéis acima dela acompanham a altura
+new ResizeObserver(() => document.documentElement.style.setProperty('--alt-base', Math.ceil($('#base .painel').getBoundingClientRect().height) + 'px')).observe($('#base .painel'));
+$('#segModoVis').addEventListener('click', e => { const b = e.target.closest('button'); if (b) b.dataset.mv === '2d' ? entrar2D() : sair2D(); });
+$('#elev').addEventListener('click', e => { const c = e.target.closest('.cel'); if (c){ selecionar(bins[+c.dataset.i]); render2D(); } });
+$('#elev').addEventListener('dblclick', e => { if (e.target.closest('.cel')) ver3D(); });
+$('#elev').addEventListener('mousemove', e => { const c = e.target.closest('.cel'); mostrarDica(c && bins[+c.dataset.i], e.clientX, e.clientY); });
+$('#elev').addEventListener('mouseleave', () => mostrarDica(null));
 
 /* =====================================================================
    Protótipo: conexão USB (Web Serial), Wi-Fi (HTTP) e demonstração
@@ -1505,6 +2186,7 @@ addEventListener('resize', () => {
   camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
   renderer.setSize(innerWidth, innerHeight);
   if (selecionado) desenharSpark();
+  if (modo2D){ render2D(); renderer.render(scene, camera); }  // o 3D fica parado no 2D, mas não pode sumir
 });
 const relogio = () => $('#relogio').textContent = new Date().toLocaleTimeString('pt-BR');
 relogio(); setInterval(relogio, 1000);
@@ -1514,14 +2196,20 @@ const ease = k => k < .5 ? 4*k*k*k : 1 - Math.pow(-2*k + 2, 3)/2;
 function animar(agora){
   requestAnimationFrame(animar);
   const dt = Math.min(0.05, (agora - tAnt) / 1000); tAnt = agora;
-  if (voo){
-    const k = voo.dur > 0 ? Math.min(1, (performance.now() - voo.ini) / voo.dur) : 1, e = ease(k);
-    camera.position.lerpVectors(voo.p0, voo.p1, e);
-    controls.target.lerpVectors(voo.a0, voo.a1, e);
-    if (k >= 1) voo = null;
+  if (modo2D) return;  // na planta 2D o 3D fica pausado
+  if (anda.ativo) atualizarAndar(dt);
+  else {
+    if (voo){
+      const k = voo.dur > 0 ? Math.min(1, (performance.now() - voo.ini) / voo.dur) : 1, e = ease(k);
+      camera.position.lerpVectors(voo.p0, voo.p1, e);
+      controls.target.lerpVectors(voo.a0, voo.a1, e);
+      if (k >= 1) voo = null;
+    }
+    andar(dt);
+    controls.update();
   }
-  andar(dt);
-  controls.update();
+  const fov = anda.ativo ? FOV_ANDAR : FOV_NORMAL;
+  if (Math.abs(camera.fov - fov) > 0.05){ camera.fov += (fov - camera.fov) * (1 - Math.exp(-dt * 6)); camera.updateProjectionMatrix(); }
   grupoTeto.visible = camera.position.y < PREDIO.h - 0.1;
   // pulso do protótipo
   const p = 0.5 + 0.5 * Math.sin(agora / 380);
@@ -1542,13 +2230,14 @@ function animar(agora){
 /* início */
 pintarProto(); atualizarCardProto(); atualizarPainel();
 requestAnimationFrame(animar);
-// atalhos pela URL, ex.: index.html#proto  ou  index.html#proto&demo
+// atalhos pela URL, ex.: index.html#proto, index.html#proto&demo, index.html#corredor, index.html#2d
 const opcoesUrl = location.hash.slice(1).split('&');
 setTimeout(() => {
   $('#carregando').style.opacity = 0;
   setTimeout(() => $('#carregando').remove(), 700);
   const v = opcoesUrl.find(o => VISTAS[o]);
   marcarVista(v || 'geral'); v ? VISTAS[v](0) : VISTAS.geral(1800);
+  if (opcoesUrl.includes('2d')) entrar2D();
   if (opcoesUrl.includes('demo')) iniciarDemo();
 }, 250);
 setTimeout(() => $('#dica').style.opacity = 0, 9000);

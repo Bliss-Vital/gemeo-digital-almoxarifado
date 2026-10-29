@@ -9,13 +9,28 @@ Gêmeo digital 3D de um almoxarifado fictício, com 8 estantes e 2.352 posiçõe
 ## O que dá para fazer
 
 - Navegar pelo almoxarifado em 3D: arrastar para girar, botão direito para mover, roda para zoom e WASD para andar.
+- **Corredores**: andar entre as estantes na altura dos olhos.
+  - Segure ↑ para andar (Shift corre).
+  - ← e → viram para a estante da esquerda ou da direita.
+  - Q e E trocam de corredor.
+  - De frente para a estante, as setas passam de caixa em caixa (← →) e de nível em nível (↑ ↓). Espaço vira para a estante do outro lado e Esc volta a olhar o corredor.
+  - Uma planta pequena mostra onde você está. Clique nela para ir até lá.
+- **Planta 2D**: navegar sem o 3D.
+  - Em cima fica a planta das estantes vista de cima. A cor mostra os módulos com alerta.
+  - Embaixo fica a frente da estante escolhida, com a quantidade de cada caixa.
+  - As teclas são as mesmas. Enter abre a caixa no 3D.
+- As estantes têm placas de endereço em cada módulo (ex.: `C-05`), iguais aos códigos das caixas (`C-05-4-2` = estante C, módulo 05, nível 4, posição 2).
 - Clicar numa caixa para ver item, quantidade, mínimo, valor e o histórico da quantidade.
 - Acompanhar indicadores, alertas de reposição e as movimentações em tempo real.
 - Buscar por item ou endereço (ex.: `rolamento`, `C-05`).
 - Trocar as cores das caixas entre **Realista**, **Status** (OK / abaixo do mínimo / sem estoque) e **Ocupação**.
 - Conectar a caixa protótipo por **USB**, **Wi‑Fi** ou usar o modo **Demonstração**, que funciona sem hardware.
 
-Atalhos pelo endereço: `index.html#proto` vai direto para a caixa protótipo e `index.html#proto&demo` já abre no modo demonstração.
+Atalhos pelo endereço:
+- `index.html#proto` vai direto para a caixa protótipo.
+- `index.html#proto&demo` já abre no modo demonstração.
+- `index.html#corredor` começa andando no corredor.
+- `index.html#2d` abre a Planta 2D.
 
 ## Hardware da caixa protótipo
 
