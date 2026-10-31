@@ -114,6 +114,17 @@ button,input,select{font:inherit;color:inherit}
 .barra>div{height:100%;border-radius:99px;background:var(--serie);width:0;transition:width .4s}
 .barra .marca-min{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--baixo);border-radius:2px}
 .legenda-barra{display:flex;justify-content:space-between;font-size:11.5px;color:var(--mudo);margin-top:5px}
+.botao-esp{margin-top:10px;display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:9px;font-size:12.5px;
+  background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.35)}
+.botao-esp .pt{width:10px;height:10px;border-radius:50%;background:var(--destaque);flex:none}
+.botao-esp b{font-weight:650}
+.botao-esp small{margin-left:auto;color:var(--mudo);font-variant-numeric:tabular-nums}
+.botao-esp.espera{background:rgba(255,255,255,.04);border-style:dashed;border-color:var(--borda);color:var(--texto-2)}
+.botao-esp.espera .pt{background:transparent;border:2px solid var(--mudo);width:8px;height:8px}
+.botao-esp.pisca{animation:botaoEsp 1.3s ease-out}
+@keyframes botaoEsp{0%{background:rgba(34,211,238,.55);box-shadow:0 0 0 0 rgba(34,211,238,.7)}100%{background:rgba(34,211,238,.1);box-shadow:0 0 0 12px rgba(34,211,238,0)}}
+.card.proto.toque{animation:cardToque 1.3s ease-out}
+@keyframes cardToque{0%{box-shadow:0 0 0 0 rgba(34,211,238,.85)}100%{box-shadow:0 0 0 18px rgba(34,211,238,0)}}
 .item-linha{margin-top:10px;font-size:12.5px;color:var(--texto-2)}
 .item-linha b{color:var(--texto);font-weight:600}
 .bloco{margin-top:12px;display:flex;flex-direction:column;gap:8px}
@@ -355,6 +366,7 @@ kbd{display:inline-block;min-width:18px;padding:0 5px;margin:0 1px;border-radius
     <div class="barra"><div id="pBarra"></div><span class="marca-min" id="pMin"></span></div>
     <div class="legenda-barra"><span id="pOcup">Ocupação —</span><span id="pMinTxt">mín. —</span></div>
     <div class="item-linha" id="pItem"></div>
+    <div class="botao-esp espera" id="pBotao" role="status" aria-live="polite" hidden><i class="pt"></i><span id="pBotaoTxt"></span><small id="pBotaoHora"></small></div>
 
     <div class="bloco">
       <div class="linha">
@@ -626,6 +638,7 @@ const proto = {
   sincronizado: false, candQtd: null, candDesde: 0, cfgEnviado: 0,
   porta: null, leitor: null, wifiTimer: null, wifiOcupado: false, ip: '', alvo: '',
   mqtt: null, mqttTimer: null, canal: '',
+  semCelula: false, botao: null, toques: 0, ultToque: 0,
   demo: {n: 0, tara: 0, atual: 0, timer: null},
   cfg: Object.assign({sku:'ROL-6205', g:128, min:5, cap:20, wifi:CANAL_PADRAO}, recuperar('gemeo-almox-proto') || {}),
 };
@@ -639,7 +652,7 @@ aplicarCfgProto();
 
 function statusDe(b){
   if (!b.real) return 'semsensor';
-  if (!proto.online) return 'offline';
+  if (!proto.online || proto.semCelula) return 'offline';
   if (b.qtd <= 0) return 'zerado';
   if (b.qtd < b.min) return 'baixo';
   return 'ok';
@@ -1971,12 +1984,19 @@ function estadoConexao(){
 }
 function atualizarCardProto(){
   const g = proto.cfg.g, b = PROTO;
-  const temLeitura = proto.pesoG != null && proto.modo;
+  const temLeitura = proto.pesoG != null && proto.modo && !proto.semCelula;
   $('#pQtd').innerHTML = temLeitura ? `${fmt(b.qtd)}<small>un.</small>` : '—';
   $('#pPeso').textContent = temLeitura ? pesoTxt(proto.pesoG) : '— g';
   const e = $('#pEstab');
   e.classList.toggle('sim', !!(temLeitura && proto.estavel && proto.online));
-  e.querySelector('span').textContent = !temLeitura ? 'sem leitura' : !proto.online ? 'sem sinal' : proto.estavel ? 'leitura estável' : 'estabilizando…';
+  e.querySelector('span').textContent = proto.semCelula && proto.online ? 'balança não ligada'
+    : !temLeitura ? 'sem leitura' : !proto.online ? 'sem sinal' : proto.estavel ? 'leitura estável' : 'estabilizando…';
+  // teste de conexão pelo botão BOOT (só aparece com o firmware que conta os toques)
+  const bt = $('#pBotao');
+  bt.hidden = !(proto.online && proto.botao != null);
+  bt.classList.toggle('espera', !proto.toques);
+  $('#pBotaoTxt').innerHTML = proto.toques ? `<b>Sinal do botão BOOT</b> · ${fmt(proto.toques)}×` : 'Aperte o botão <b>BOOT</b> da ESP32 para testar';
+  $('#pBotaoHora').textContent = proto.toques ? hora(proto.ultToque) : '';
   const f = temLeitura ? b.qtd / b.cap : 0;
   $('#pBarra').style.width = Math.min(100, f*100) + '%';
   $('#pMin').style.left = `calc(${Math.min(100, b.min / b.cap * 100)}% - 1px)`;
@@ -2001,17 +2021,41 @@ function enviarCfg(){
   cmdCaixa(`item ${c.sku};${c.g};${c.min};${c.cap}`).catch(() => {});
 }
 
-/* Recebe uma leitura do ESP32: {"peso_g": 1234.5, "estavel": true, "item": "ROL-6205", "g_un": 128, ...} */
+/* Botão BOOT da ESP32: o firmware conta os toques desde que ligou e cada número novo é um toque.
+   Serve para testar a conexão antes de montar a balança. */
+function verBotao(n){
+  const antes = proto.botao; proto.botao = n;
+  if (antes == null || n <= antes) return;  // primeira leitura, ou a ESP32 reiniciou e voltou a contar do zero
+  proto.toques += n - antes; proto.ultToque = Date.now();
+  logDisp(`Sinal do botão BOOT recebido (${proto.toques}×): a ESP32 está conectada.`);
+  avisar(`Sinal recebido: botão BOOT da ESP32 apertado (${proto.toques}×)`, 3000);
+  flutuar(PROTO, 'BOOT', '#22d3ee');
+  protoLedEsp.material.color.copy(COR_LED_ESP.on); protoLedEsp.userData.pisca = performance.now() + 600;
+  atualizarCardProto();
+  for (const [id, cls] of [['#pBotao', 'pisca'], ['#cardProto', 'toque']]){
+    const el = $(id); el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls);  // reinicia a animação
+  }
+}
+
+/* Recebe uma leitura do ESP32: {"peso_g": 1234.5, "estavel": true, "item": "ROL-6205", "g_un": 128, "botao": 0, ...} */
 function receberLeitura(d){
   if (typeof d.peso_g !== 'number') return;
   const eraOnline = proto.online;
   if (proto.modo !== 'demo') lerCfgDaCaixa(d);
   proto.pesoG = d.peso_g; proto.estavel = d.estavel !== false; proto.ultimo = Date.now(); proto.online = true;
+  const semCelula = d.sensor === false;
+  if (semCelula !== proto.semCelula){
+    sujoUI = true;
+    if (semCelula) logDisp('ESP32 conectada, mas a balança (HX711) não está ligada. Aperte o botão BOOT para testar.');
+  }
+  proto.semCelula = semCelula;
   if (d.ip && d.ip !== proto.ip){ proto.ip = d.ip; logDisp(`IP da caixa na rede: ${d.ip}`); }
   protoLedEsp.material.color.copy(COR_LED_ESP.on); protoLedEsp.userData.pisca = performance.now();
+  if (typeof d.botao === 'number') verBotao(d.botao);
   const q = Math.max(0, Math.round(Math.max(0, proto.pesoG) / proto.cfg.g));
   const agora = Date.now();
-  if (q !== proto.candQtd){ proto.candQtd = q; proto.candDesde = agora; }
+  if (proto.semCelula) resincronizar();  // sem balança não há quantidade para contar
+  else if (q !== proto.candQtd){ proto.candQtd = q; proto.candDesde = agora; }
   // confirma a nova quantidade quando a leitura fica parada (mais tempo se o ESP32 não indicar estabilidade)
   else if (agora - proto.candDesde >= (proto.estavel ? 1200 : 2500)){
     if (!proto.sincronizado){
@@ -2048,6 +2092,7 @@ async function desconectar(){
     try { await p.close(); } catch(e){}
   }
   proto.modo = null; proto.via = null; proto.online = false; proto.ultimo = 0; proto.pesoG = null; proto.cfgEnviado = 0;
+  proto.semCelula = false; proto.botao = null; proto.toques = 0;
   resincronizar(); sujoUI = true; pintarProto(); atualizarCardProto();
 }
 

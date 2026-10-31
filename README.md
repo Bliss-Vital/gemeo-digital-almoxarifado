@@ -51,6 +51,7 @@ Resumo:
 - **Internet:** o ESP32 publica a leitura a cada 1 s no servidor MQTT público `broker.hivemq.com`, no tópico `gemeo-almox/ufabc-almox-g5/dados`. O painel lê pelo WebSocket seguro do mesmo servidor, então funciona no link publicado e em qualquer rede.
 - **Rede local por IP:** `http://<IP>/dados`. Só funciona com o `index.html` baixado no computador; no link publicado (https), o navegador bloqueia o acesso direto ao IP.
 - A caixa guarda o item e o peso de uma peça. Quem abrir o painel em outro computador vê a mesma contagem.
+- **Teste sem montar o circuito:** grave o código só na ESP32, conecte o painel e aperte o botão **BOOT** da placa. O painel mostra o sinal na hora, e o LED azul da placa pisca quando um comando do painel chega.
 - Células de balança de banheiro não medem bem coisas leves. Use peças de pelo menos uns 50 g por unidade.
 
 ## Estrutura

@@ -21,6 +21,11 @@
 
   Dica de montagem: mantenha a plataforma/vidro da própria balança e apoie a
   caixa em cima dela — as células precisam continuar nos 4 cantos.
+
+  TESTE SEM O CIRCUITO: grave este código só na ESP32 (sem HX711) e conecte
+  no painel. Cada toque no botão BOOT da placa aparece no gêmeo digital, e o
+  LED azul da placa pisca a cada toque e a cada comando que chega do painel
+  (aceso fixo = conectada na internet).
   ---------------------------------------------------------------------------
   ARDUINO IDE
     Placa: "ESP32 Dev Module" (pacote "esp32" da Espressif)
@@ -75,6 +80,8 @@ const char* ID_CAIXA = "PROTO-01";
 
 const int PINO_DT  = 16;
 const int PINO_SCK = 4;
+const int PINO_BOTAO = 0;  // botão BOOT da placa (aperta = LOW)
+const int PINO_LED   = 2;  // LED azul da placa (ESP32 DevKit V1)
 
 // Variação máxima (g) dentro da janela de leituras para considerar o peso estável.
 // Células de balança de banheiro oscilam mais: se nunca ficar "estável", aumente.
@@ -111,6 +118,10 @@ float pesoAtual = 0;
 bool estavel = false;
 unsigned long ultimoEnvio = 0;
 
+// Toques no botão BOOT desde que a placa ligou: o painel mostra cada número novo
+unsigned long toquesBotao = 0, ledPiscaAte = 0;
+bool enviarAgora = false;  // manda a leitura na hora (sem esperar o próximo envio)
+
 void zerarJanela() {
   nJanela = 0;
   iJanela = 0;
@@ -141,8 +152,35 @@ String json() {
     n += snprintf(buf + n, sizeof(buf) - n, ",\"qtd\":%ld,\"item\":\"%s\",\"g_un\":%.1f,\"min\":%d,\"cap\":%d",
                   qtd, itemSku.c_str(), pesoUn, itemMin, itemCap);
   }
-  snprintf(buf + n, sizeof(buf) - n, ",\"ip\":\"%s\",\"uptime_s\":%lu}", ipAtual.c_str(), millis() / 1000);
+  if (!hx711Ok) n += snprintf(buf + n, sizeof(buf) - n, ",\"sensor\":false");  // balança não ligada
+  snprintf(buf + n, sizeof(buf) - n, ",\"botao\":%lu,\"ip\":\"%s\",\"uptime_s\":%lu}",
+           toquesBotao, ipAtual.c_str(), millis() / 1000);
   return String(buf);
+}
+
+void piscarLed() {
+  ledPiscaAte = millis() + 200;
+}
+
+// LED aceso = conectada na internet; pisca (inverte) por 200 ms a cada toque ou comando
+void atualizarLed() {
+  bool base = mqtt.connected();
+  digitalWrite(PINO_LED, millis() < ledPiscaAte ? !base : base);
+}
+
+void lerBotao() {
+  static bool antes = HIGH;
+  static unsigned long mudou = 0;
+  bool agora = digitalRead(PINO_BOTAO);
+  if (agora == antes || millis() - mudou < 40) return;  // ignora o tremor do contato
+  mudou = millis();
+  antes = agora;
+  if (agora == LOW) {
+    toquesBotao++;
+    piscarLed();
+    enviarAgora = true;
+    Serial.printf("# Botao BOOT apertado (%lu)\n", toquesBotao);
+  }
 }
 
 void tarar() {
@@ -231,6 +269,7 @@ void info() {
 void executar(String cmd, bool remoto) {
   cmd.trim();
   if (cmd.length() == 0) return;
+  piscarLed();  // mostra na placa que o comando chegou
   if (cmd == "t") tarar();
   else if (cmd.startsWith("item ")) configurarItem(cmd.substring(5));
   else if (remoto) return;
@@ -382,10 +421,15 @@ void setup() {
     itemCap = prefs.getInt("cap", 1);
   }
 
+  pinMode(PINO_BOTAO, INPUT_PULLUP);
+  pinMode(PINO_LED, OUTPUT);
+
   balanca.begin(PINO_DT, PINO_SCK);
+  pinMode(PINO_DT, INPUT_PULLUP);  // sem HX711 ligado, o pino fica em 1 e não parece "pronto"
   hx711Ok = balanca.wait_ready_timeout(2000);
   if (!hx711Ok) {
-    Serial.println("# ERRO: HX711 nao respondeu. Confira VCC, GND, DT (GPIO16) e SCK (GPIO4).");
+    Serial.println("# HX711 nao respondeu: a balanca fica desligada. Confira VCC, GND, DT (GPIO16) e SCK (GPIO4).");
+    Serial.println("# (Sem o circuito montado e normal: a conexao e o botao BOOT funcionam para testar.)");
   } else {
     balanca.set_scale(fator);
     if (prefs.isKey("offset")) balanca.set_offset(prefs.getLong("offset"));
@@ -420,17 +464,20 @@ void setup() {
 void loop() {
   servidor.handleClient();
   lerComandos();
+  lerBotao();
   lerBalanca();
   manterWifi();
   manterMqtt();
+  atualizarLed();
 
   unsigned long agora = millis();
-  if (agora - ultimoEnvio >= 500) {
+  if (enviarAgora || agora - ultimoEnvio >= 500) {
     ultimoEnvio = agora;
     Serial.println(json());
   }
-  if (mqtt.connected() && agora - ultimoMqtt >= 1000) {
+  if (mqtt.connected() && (enviarAgora || agora - ultimoMqtt >= 1000)) {
     ultimoMqtt = agora;
     mqtt.publish(topicoDados.c_str(), json().c_str());
   }
+  enviarAgora = false;
 }

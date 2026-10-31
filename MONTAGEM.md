@@ -10,6 +10,25 @@ Tempo estimado: 2 a 3 horas.
 
 ---
 
+## 0. Teste rápido: só a ESP32, antes de montar o circuito
+
+Dá para testar a conexão com o gêmeo digital só com a ESP32 e o cabo USB, sem HX711 e sem balança. O código é o mesmo da caixa, então não precisa trocar nada depois.
+
+1. Prepare a Arduino IDE (passo 5) e grave o `esp32_balanca.ino` com o seu Wi-Fi (passo 6).
+2. Abra o painel: **https://bliss-vital.github.io/gemeo-digital-almoxarifado/#proto&caixa=ufabc-almox-g5**. Ou, no cartão PROTO-01, clique em **Wi-Fi**, digite `ufabc-almox-g5` e clique em **Conectar**. Se preferir pelo cabo, feche o Monitor Serial e clique em **USB**.
+3. O selo fica verde (**Ao vivo**) e o cartão mostra "balança não ligada". Isso é o normal sem o circuito.
+4. **Aperte o botão BOOT da ESP32** (o botão ao lado do conector USB; o outro é o EN, que reinicia). No painel aparecem:
+   - o aviso "Sinal recebido: botão BOOT da ESP32 apertado" no alto da tela;
+   - a faixa "Sinal do botão BOOT · 1×" no cartão PROTO-01, com o horário;
+   - o letreiro "BOOT" em cima da caixa PROTO-01 no 3D.
+5. **Teste no outro sentido:** clique em **Tarar** no painel. O LED azul da placa pisca quando o comando chega.
+
+**O LED azul da placa** fica aceso quando a ESP32 está conectada na internet. Ele pisca a cada toque no BOOT e a cada comando que chega do painel. Algumas placas não têm esse LED; nelas o teste funciona igual, só sem a luz.
+
+Se o selo não ficar verde, veja a tabela de problemas (passo 13). Os mais comuns são rede de 5 GHz e rede eduroam.
+
+---
+
 ## 1. Materiais
 
 | Item | Qtd. | Observação |
@@ -134,8 +153,9 @@ Se a sua placa for **ESP32-WROVER**, o GPIO 16 fica ocupado pela memória da pla
    # Wi-Fi conectado em "MinhaRede". IP 192.168.0.23
    # Caixa PROTO-01 | HX711 ok | fator 1.0000 (sem calibrar)
    # Internet ok. No painel: Wi-Fi -> codigo "ufabc-almox-g5"
-   {"id":"PROTO-01","peso_g":3.0,"estavel":true,"ip":"192.168.0.23","uptime_s":3}
+   {"id":"PROTO-01","peso_g":3.0,"estavel":true,"botao":0,"ip":"192.168.0.23","uptime_s":3}
    ```
+   Sem o HX711 ligado, aparece `HX711 nao respondeu` e o JSON traz `"sensor":false`. A conexão e o botão BOOT funcionam do mesmo jeito.
 3. **Aperte a plataforma com a mão.** O `peso_g` precisa mudar bastante. Antes de calibrar, o número não está em gramas e pode até ficar negativo, o que é normal.
 4. **Rede pelo Monitor Serial** (sem regravar o código). Envie:
    ```
@@ -270,8 +290,9 @@ células de carga ─► HX711 ─► ESP32 ──┬─ USB (Serial, 2 leituras
 - guarda o item, o peso de uma peça, o mínimo e a capacidade, e já calcula a quantidade;
 - envia tudo em JSON:
   ```json
-  {"id":"PROTO-01","peso_g":1280.4,"estavel":true,"qtd":10,"item":"ROL-6205","g_un":128.0,"min":5,"cap":20,"ip":"192.168.0.23","uptime_s":321}
+  {"id":"PROTO-01","peso_g":1280.4,"estavel":true,"qtd":10,"item":"ROL-6205","g_un":128.0,"min":5,"cap":20,"botao":0,"ip":"192.168.0.23","uptime_s":321}
   ```
+- conta os toques no botão BOOT (`botao`) e manda a leitura na hora em que ele é apertado. O painel mostra cada número novo como um sinal, o que serve para testar a conexão.
 
 **Pela internet:** o ESP32 publica no servidor MQTT público `broker.hivemq.com`. O painel lê pelo mesmo servidor, via WebSocket seguro.
 
