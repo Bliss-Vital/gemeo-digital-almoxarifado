@@ -78,14 +78,13 @@ button,input,select{font:inherit;color:inherit}
 .lista li small{display:block;color:var(--mudo);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lista li .q{font-size:12px;color:var(--texto-2);white-space:nowrap}
 .ico{width:18px;height:18px;border-radius:50%;display:inline-grid;place-items:center;font-size:11px;font-weight:800;color:#111;flex:none}
-.ico.ok{background:var(--ok);color:#fff}.ico.baixo{background:var(--baixo)}.ico.zerado{background:var(--zerado);color:#fff}.ico.offline{background:var(--offline)}
+.ico.ok{background:var(--ok);color:#fff}.ico.baixo{background:var(--baixo)}.ico.zerado{background:var(--zerado);color:#fff}.ico.offline{background:var(--offline)}.ico.semsensor{background:rgba(255,255,255,.16);color:var(--texto-2)}
 .sec.cresce{flex:1 1 0;min-height:0;display:flex;flex-direction:column}
 .sec.cresce .lista{flex:1;min-height:0}
 #feed li{cursor:pointer;align-items:flex-start;font-size:12px}
 #feed time{color:var(--mudo);font-size:11.5px;width:56px;flex:none;padding-top:1px}
 .tag{font-size:10px;font-weight:700;letter-spacing:.4px;padding:1px 5px;border-radius:4px;flex:none;margin-top:1px}
 .tag.real{background:var(--destaque);color:#04252b}
-.tag.sim{background:rgba(255,255,255,.1);color:var(--texto-2)}
 .delta-neg{color:#ff9d8f}.delta-pos{color:#8fe38f}
 .vazio{color:var(--mudo);font-size:12px;padding:4px 6px}
 
@@ -295,7 +294,7 @@ kbd{display:inline-block;min-width:18px;padding:0 5px;margin:0 1px;border-radius
     </svg>
     <div>
       <h1>Gêmeo Digital · Almoxarifado Central</h1>
-      <p>Ambiente fictício · 8 estantes · <span id="nPos">—</span> posições</p>
+      <p>8 estantes · <span id="nPos">—</span> posições · só a PROTO-01 tem sensor</p>
     </div>
   </div>
   <div id="vistas" class="seg" role="group" aria-label="Vistas">
@@ -362,13 +361,16 @@ kbd{display:inline-block;min-width:18px;padding:0 5px;margin:0 1px;border-radius
         <span class="ajuda" style="flex:none">Conectar via</span>
         <div class="seg" id="segModo" role="group" aria-label="Conexão">
           <button data-modo="serial" title="ESP32 ligado no PC pelo cabo USB">USB</button>
-          <button data-modo="wifi" title="ESP32 na mesma rede Wi-Fi do PC">Wi‑Fi</button>
+          <button data-modo="wifi" title="ESP32 no Wi‑Fi: pela internet (código da caixa) ou pela rede local (IP)">Wi‑Fi</button>
           <button data-modo="demo" title="Simula a balança sem hardware">Demonstração</button>
         </div>
       </div>
-      <div class="linha" id="cxWifi" hidden>
-        <div class="campo"><input id="inIp" placeholder="IP do ESP32, ex.: 192.168.4.1" spellcheck="false"></div>
-        <button class="bt prim" id="btWifi">Conectar</button>
+      <div id="cxWifi" hidden>
+        <div class="linha">
+          <div class="campo"><input id="inIp" placeholder="Código da caixa ou IP" spellcheck="false" autocapitalize="off" aria-label="Código da caixa ou IP do ESP32"></div>
+          <button class="bt prim" id="btWifi">Conectar</button>
+        </div>
+        <p class="ajuda">Código da caixa (ex.: <b>ufabc-almox-g5</b>): pela internet, de qualquer lugar. IP (ex.: 192.168.4.1): só na rede local, com o index.html aberto do computador.</p>
       </div>
       <div id="cxDemo" hidden>
         <div class="linha">
@@ -408,7 +410,7 @@ kbd{display:inline-block;min-width:18px;padding:0 5px;margin:0 1px;border-radius
   <section class="card" id="cardDet" hidden>
     <div class="card-cab">
       <div>
-        <div class="sobre" id="dFonte">Sensor simulado</div>
+        <div class="sobre" id="dFonte">—</div>
         <h2 id="dCod">—</h2>
       </div>
       <button class="x" id="dFechar" aria-label="Fechar">×</button>
@@ -436,11 +438,6 @@ kbd{display:inline-block;min-width:18px;padding:0 5px;margin:0 1px;border-radius
       <button data-cor="ocup">Ocupação</button>
     </div>
     <div id="legenda"></div>
-    <span class="sep"></span>
-    <label class="chave" title="Demais caixas com sensores simulados, mostrando a expansão do sistema"><input type="checkbox" id="chSim" checked><span class="trilho"></span>Sensores simulados</label>
-    <div class="seg" id="segVel" role="group" aria-label="Velocidade da simulação">
-      <button data-vel="1" class="ativo">1×</button><button data-vel="5">5×</button><button data-vel="20">20×</button>
-    </div>
   </div>
 </div>
 
@@ -485,6 +482,7 @@ kbd{display:inline-block;min-width:18px;padding:0 5px;margin:0 1px;border-radius
 
 <script src="lib/three.min.js"></script>
 <script src="lib/OrbitControls.js"></script>
+<script src="logo.js"></script>
 <script>
 'use strict';
 /* =====================================================================
@@ -494,7 +492,6 @@ const $ = s => document.querySelector(s);
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 const rng = mulberry32(20261028);
 const rnd = (a,b) => a + (b-a)*rng();
-const rndi = (a,b) => Math.floor(rnd(a, b+1));
 const fmt = (n,d=0) => Number(n).toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
 const brl = n => n.toLocaleString('pt-BR',{style:'currency',currency:'BRL',minimumFractionDigits:0,maximumFractionDigits:0});
 const brl2 = n => n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
@@ -545,14 +542,18 @@ const CATALOGO = [
 ];
 const PORSKU = Object.fromEntries(CATALOGO.map(c => [c.sku, c]));
 for (const c of CATALOGO) c.corLin = new THREE.Color(c.cor).convertSRGBToLinear();
+// as demais posições existem no layout, mas estão vazias e sem sensor: não geram nenhum dado
+const SEM_SENSOR = {sku:'—', nome:'Posição sem sensor', g:0, preco:0, cap:1, cor:'#aeb3b8'};
+SEM_SENSOR.corLin = new THREE.Color(SEM_SENSOR.cor).convertSRGBToLinear();
 
-const COR = { bin:'#f2b20f', ok:'#0ca30c', baixo:'#fab219', zerado:'#d03b3b', offline:'#8a8f98', apagado:'#aeb3b8', destaque:'#22d3ee' };
+const COR = { bin:'#f2b20f', ok:'#0ca30c', baixo:'#fab219', zerado:'#d03b3b', offline:'#8a8f98', semsensor:'#b9bec4', apagado:'#aeb3b8', destaque:'#22d3ee' };
 const COR_LIN = Object.fromEntries(Object.entries(COR).map(([k,v]) => [k, lin(v)]));
 const STATUS = {
-  ok:      {rot:'Estoque OK',        ico:'✓'},
-  baixo:   {rot:'Abaixo do mínimo',  ico:'!'},
-  zerado:  {rot:'Sem estoque',       ico:'✕'},
-  offline: {rot:'Sem sinal do sensor', ico:'?'},
+  ok:        {rot:'Estoque OK',        ico:'✓'},
+  baixo:     {rot:'Abaixo do mínimo',  ico:'!'},
+  zerado:    {rot:'Sem estoque',       ico:'✕'},
+  offline:   {rot:'Sem sinal do sensor', ico:'?'},
+  semsensor: {rot:'Sem sensor',        ico:'–'},
 };
 const RAMPA = ['#cde2fb','#9ec5f4','#6da7ec','#3987e5','#256abf','#184f95','#0d366b'].map(h => lin(h));
 function rampa(f){
@@ -587,18 +588,13 @@ for (const [li, L] of LINHAS.entries()){
     for (let n = 1; n <= N_NIV; n++){
       const yTopo = Y0 + (n-1)*DY + ESP_TAB/2;
       for (let p = 1; p <= N_POS; p++){
-        const item = CATALOGO[Math.floor(rng()*CATALOGO.length)];
-        const cap = Math.max(4, Math.round(item.cap * rnd(0.8, 1.2)));
-        const min = Math.max(1, Math.round(cap * 0.2));
-        const r = rng();
-        const qtd = r < 0.008 ? 0 : r < 0.04 ? rndi(1, Math.max(1, min-1)) : rndi(min, cap);
         const cod = `${L.letra}-${String(m).padStart(2,'0')}-${n}-${p}`;
         bins.push({
-          i: bins.length, cod, letra: L.letra, li, m, n, p, item, cap, min, qtd, real: false,
+          i: bins.length, cod, letra: L.letra, li, m, n, p, item: SEM_SENSOR, cap: 1, min: 0, qtd: 0, real: false,
           pos: new THREE.Vector3(L.xb + L.s*(DEP - BD/2 - 0.01), yTopo, zc + (2-p)*0.31),
           rotY: L.s > 0 ? Math.PI/2 : -Math.PI/2,
-          hist: null, ult: Date.now() - rndi(5, 600)*60000,
-          busca: semAcento(`${cod} ${item.nome} ${item.sku}`),
+          hist: [], ult: Date.now(),
+          busca: semAcento(cod),
         });
       }
     }
@@ -609,6 +605,7 @@ PROTO.real = true;
 PROTO.qtd = 0;
 PROTO.pos.y += PLACA;
 PROTO.hist = [];
+const REAIS = bins.filter(b => b.real);  // caixas com célula de carga (hoje, só a PROTO-01)
 $('#nPos').textContent = fmt(bins.length);
 
 /* Endereço: estante (li), módulo (m), nível (n), posição (p). nav = onde a pessoa está navegando */
@@ -618,28 +615,19 @@ const nav = {li: PROTO.li, m: PROTO.m, n: PROTO.n, p: PROTO.p};
 const binNav = () => binDe(nav.li, nav.m, nav.n, nav.p);
 const moduloEm = z => clamp(Math.floor(-z / MW) + 1, 1, N_MOD);
 
-/* Histórico sintético para os sensores simulados (gerado quando a caixa é aberta) */
-function historico(b){
-  if (b.hist) return b.hist;
-  const r = mulberry32(b.i * 7919 + 13);
-  const pts = []; let v = Math.round(b.min + (b.cap - b.min) * r());
-  const agora = Date.now(), passos = 26;
-  for (let k = 0; k < passos; k++){
-    pts.push({t: agora - (passos - k) * 18 * 60000, q: v});
-    if (r() < 0.65) v = Math.max(0, v - Math.max(1, Math.round(b.cap * (0.04 + r()*0.14))));
-    if (v < b.min && r() < 0.45) v = b.cap;
-  }
-  pts.push({t: b.ult, q: b.qtd});
-  b.hist = pts.filter(p => p.t <= b.ult).sort((a,c) => a.t - c.t);
-  return b.hist;
-}
+/* Histórico: só a caixa real tem, montado com as leituras que chegam da célula de carga */
+function historico(b){ return b.hist; }
 
+// mesmo CANAL e servidor do esp32_balanca.ino (o painel usa a porta WebSocket segura do broker)
+const CANAL_PADRAO = 'ufabc-almox-g5';
+const MQTT_URL = 'wss://broker.hivemq.com:8884/mqtt';
 const proto = {
-  modo: null, online: false, pesoG: null, estavel: false, ultimo: 0,
-  sincronizado: false, candQtd: null, candDesde: 0,
-  porta: null, leitor: null, wifiTimer: null, wifiOcupado: false, ip: '',
+  modo: null, via: null, online: false, pesoG: null, estavel: false, ultimo: 0,
+  sincronizado: false, candQtd: null, candDesde: 0, cfgEnviado: 0,
+  porta: null, leitor: null, wifiTimer: null, wifiOcupado: false, ip: '', alvo: '',
+  mqtt: null, mqttTimer: null, canal: '',
   demo: {n: 0, tara: 0, atual: 0, timer: null},
-  cfg: Object.assign({sku:'ROL-6205', g:128, min:5, cap:20, ip:''}, recuperar('gemeo-almox-proto') || {}),
+  cfg: Object.assign({sku:'ROL-6205', g:128, min:5, cap:20, wifi:CANAL_PADRAO}, recuperar('gemeo-almox-proto') || {}),
 };
 function aplicarCfgProto(){
   const it = PORSKU[proto.cfg.sku] || CATALOGO[6];
@@ -650,7 +638,8 @@ function aplicarCfgProto(){
 aplicarCfgProto();
 
 function statusDe(b){
-  if (b.real && !proto.online) return 'offline';
+  if (!b.real) return 'semsensor';
+  if (!proto.online) return 'offline';
   if (b.qtd <= 0) return 'zerado';
   if (b.qtd < b.min) return 'baixo';
   return 'ok';
@@ -830,6 +819,15 @@ faixa(5.2, 3.2, 4.8, 0.07); faixa(5.2, 9.6, 4.8, 0.07); faixa(2.8, 6.4, 0.07, 6.
   };
   txt('RECEBIMENTO', 6.8, 10.6, 3.6);
   txt('CONFERÊNCIA', 5.2, 2.6, 3.2);
+}
+// logo da startup pintado no piso, na área livre entre as estantes e o balcão
+if (typeof LOGO_PNG === 'string'){
+  const texLogo = new THREE.TextureLoader().load(LOGO_PNG);
+  texLogo.encoding = THREE.sRGBEncoding;
+  texLogo.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  const w = 6;
+  const logo = new THREE.Mesh(new THREE.PlaneGeometry(w, w*736/2196), new THREE.MeshBasicMaterial({map: texLogo, transparent:true, depthWrite:false}));
+  logo.rotation.x = -Math.PI/2; logo.position.set(-4.85, 0.006, 3.7); scene.add(logo);
 }
 
 /* ---------- estantes (estrutura metálica) ---------- */
@@ -1101,7 +1099,7 @@ let modo2D = false;
 function corCaixa(b, st){
   if (filtro && !filtro.has(b.i)) return COR_LIN.apagado;
   if (modoCor === 'status') return COR_LIN[st];
-  if (modoCor === 'ocup') return rampa(b.qtd / b.cap);
+  if (modoCor === 'ocup') return b.real ? rampa(b.qtd / b.cap) : COR_LIN.semsensor;
   return COR_LIN.bin;
 }
 function alturaConteudo(b){
@@ -1163,7 +1161,7 @@ function flutuar(b, texto, cor){
 }
 
 /* =====================================================================
-   Movimentações e simulação dos demais sensores
+   Movimentações (só da caixa real; nenhuma é simulada)
    ===================================================================== */
 let nEventos = 0;
 function mover(b, delta, tipo){
@@ -1187,24 +1185,11 @@ function registrarEvento(b, delta, tipo){
   const li = document.createElement('li');
   li.dataset.i = b.i;
   const d = delta ? `<span class="${delta < 0 ? 'delta-neg' : 'delta-pos'} num">${delta > 0 ? '+' : '−'}${fmt(Math.abs(delta))} un.</span>` : '';
-  li.innerHTML = `<time class="num">${hora(Date.now())}</time><span class="tag ${b.real ? 'real' : 'sim'}">${b.real ? 'REAL' : 'SIM'}</span>
+  li.innerHTML = `<time class="num">${hora(Date.now())}</time><span class="tag real">REAL</span>
     <div class="txt"><b>${b.cod}</b> ${tipo} ${d}<small>${b.item.nome}</small></div>`;
   ul.prepend(li);
   while (ul.children.length > 60) ul.lastChild.remove();
 }
-let simAtiva = true, simVel = 1;
-function passoSim(){
-  const b = bins[Math.floor(Math.random() * N)];
-  if (!b.real && b.qtd > 0 && Math.random() < 0.85){
-    const q = Math.max(1, Math.round(b.cap * (0.03 + Math.random() * 0.2)));
-    mover(b, -Math.min(q, b.qtd), 'Retirada');
-  }
-  if (Math.random() < 0.3){
-    const pend = bins.filter(x => !x.real && x.qtd < x.min);
-    if (pend.length){ const r = pend[Math.floor(Math.random() * pend.length)]; mover(r, r.cap - r.qtd, 'Reposição'); }
-  }
-}
-setInterval(() => { if (simAtiva) for (let k = 0; k < simVel; k++) passoSim(); }, 1400);
 
 /* =====================================================================
    Painéis: indicadores, alertas, busca
@@ -1214,16 +1199,16 @@ function atualizarPainel(){
   if (!sujoUI) return; sujoUI = false;
   let un = 0, val = 0, baixo = 0, zer = 0;
   const al = [];
-  for (const b of bins){
+  for (const b of REAIS){
     un += b.qtd; val += b.qtd * b.item.preco;
     const st = statusDe(b);
     if (st === 'baixo') baixo++; else if (st === 'zerado') zer++;
-    if (st === 'baixo' || st === 'zerado' || (b.real && st === 'offline')) al.push([b, st]);
+    if (st === 'baixo' || st === 'zerado' || st === 'offline') al.push([b, st]);
   }
-  $('#kPos').textContent = fmt(N);
-  $('#kPosSub').textContent = `1 real · ${fmt(N-1)} simul.`;
+  $('#kPos').textContent = fmt(REAIS.length);
+  $('#kPosSub').textContent = `PROTO-01 · ${fmt(N - REAIS.length)} posições sem sensor`;
   $('#kUn').textContent = fmt(un);
-  $('#kUnSub').textContent = `${CATALOGO.length} itens cadastrados`;
+  $('#kUnSub').textContent = PROTO.item.nome;
   $('#kAl').textContent = fmt(baixo + zer);
   $('#kAlSub').textContent = `${zer} sem estoque · ${baixo} abaixo do mín.`;
   $('#kVal').textContent = brl(val);
@@ -1248,7 +1233,7 @@ function buscar(texto){
   ul.innerHTML = achados.length
     ? `<li class="vazio">${fmt(achados.length)} posição(ões) destacada(s) no 3D</li>` + achados.slice(0, 40).map(b => {
         const st = statusDe(b);
-        return `<li data-i="${b.i}">${icone(st)}<div class="txt"><b>${b.cod}</b><small>${b.item.nome}</small></div><span class="q num">${fmt(b.qtd)} un.</span></li>`;
+        return `<li data-i="${b.i}">${icone(st)}<div class="txt"><b>${b.cod}</b><small>${b.item.nome}</small></div><span class="q num">${b.real ? `${fmt(b.qtd)} un.` : 'sem sensor'}</span></li>`;
       }).join('')
     : '<li class="vazio">Nada encontrado.</li>';
 }
@@ -1264,8 +1249,8 @@ function desenharLegenda(){
     L.innerHTML = `<span class="it">0%</span><span class="grad"></span><span class="it">100% da capacidade</span>`;
   } else {
     const pref = modoCor === 'real' ? '<span class="it" style="color:var(--mudo)">LED:</span>' : '';
-    const curto = {ok:'OK', baixo:'Abaixo do mín.', zerado:'Sem estoque'};
-    L.innerHTML = pref + ['ok','baixo','zerado'].map(s => `<span class="it">${icone(s)}${curto[s]}</span>`).join('');
+    const curto = {ok:'OK', baixo:'Abaixo do mín.', zerado:'Sem estoque', semsensor:'Sem sensor'};
+    L.innerHTML = pref + ['ok','baixo','zerado','semsensor'].map(s => `<span class="it">${icone(s)}${curto[s]}</span>`).join('');
   }
 }
 desenharLegenda();
@@ -1274,12 +1259,6 @@ $('#segCor').addEventListener('click', e => {
   modoCor = b.dataset.cor;
   for (const x of $('#segCor').children) x.classList.toggle('ativo', x === b);
   desenharLegenda(); pintarTudo();
-});
-$('#chSim').addEventListener('change', e => simAtiva = e.target.checked);
-$('#segVel').addEventListener('click', e => {
-  const b = e.target.closest('button'); if (!b) return;
-  simVel = +b.dataset.vel;
-  for (const x of $('#segVel').children) x.classList.toggle('ativo', x === b);
 });
 
 /* =====================================================================
@@ -1296,9 +1275,18 @@ function selecionar(b){
 function atualizarDetalhe(){
   const b = selecionado; if (!b) return;
   const st = statusDe(b), g = pesoUnit(b);
-  $('#dFonte').textContent = b.real ? 'Sensor real · ESP32 + HX711' : 'Sensor simulado · expansão do sistema';
+  $('#dFonte').textContent = b.real ? 'Sensor real · ESP32 + HX711' : 'Sem sensor · posição não monitorada';
   $('#dFonte').style.color = b.real ? 'var(--destaque)' : '';
   $('#dCod').innerHTML = b.real ? `${b.cod} <span class="end">PROTO-01</span>` : b.cod;
+  if (!b.real){
+    $('#dItem').textContent = 'Caixa vazia, ainda sem célula de carga. Só a PROTO-01 envia dados.';
+    $('#dStatus').innerHTML = `<span class="pill">${icone(st)}${STATUS[st].rot}</span>`;
+    for (const id of ['#dQtd', '#dPeso', '#dMinCap', '#dValor']) $(id).textContent = '—';
+    $('#dBarra').style.width = '0%'; $('#dMin').style.left = '0';
+    $('#dUlt').textContent = 'Sem leituras: esta posição não tem sensor.';
+    desenharSpark();
+    return;
+  }
   $('#dItem').innerHTML = `<b>${b.item.nome}</b> · ${b.item.sku} · ${fmt(g, g < 10 ? 1 : 0)} g/un.`;
   $('#dStatus').innerHTML = `<span class="pill">${icone(st)}${STATUS[st].rot}</span>`;
   $('#dQtd').textContent = `${fmt(b.qtd)} un.`;
@@ -1307,7 +1295,7 @@ function atualizarDetalhe(){
   $('#dValor').textContent = brl2(b.qtd * b.item.preco);
   $('#dBarra').style.width = Math.min(100, b.qtd / b.cap * 100) + '%';
   $('#dMin').style.left = `calc(${Math.min(100, b.min / b.cap * 100)}% - 1px)`;
-  $('#dUlt').textContent = `Última movimentação: ${hora(b.ult)} · ${b.real ? 'atualização automática pela célula de carga' : 'dados simulados para demonstração'}`;
+  $('#dUlt').textContent = `Última movimentação: ${hora(b.ult)} · atualização automática pela célula de carga`;
   desenharSpark();
 }
 function desenharSpark(){
@@ -1316,6 +1304,7 @@ function desenharSpark(){
   if (!W) return;
   if (cv.width !== Math.round(W*dpr)){ cv.width = Math.round(W*dpr); cv.height = Math.round(H*dpr); }
   const x = cv.getContext('2d'); x.setTransform(dpr,0,0,dpr,0,0); x.clearRect(0,0,W,H);
+  if (!b.real){ $('#dJanela').textContent = 'sem dados'; $('#dTip').style.display = 'none'; return; }
   const pts = historico(b).concat([{t: Date.now(), q: b.qtd}]);
   if (pts.length < 2) pts.unshift({t: Date.now() - 60000, q: b.qtd});
   const t0 = pts[0].t, t1 = pts[pts.length-1].t;
@@ -1470,6 +1459,7 @@ function mostrarDicaHtml(html, x, y){
 }
 function htmlBin(b){
   const st = statusDe(b);
+  if (!b.real) return `<b>${b.cod}</b><small style="margin-top:3px">${icone(st)} ${STATUS[st].rot} · posição vazia</small>`;
   return `<b>${b.cod}</b>${b.real ? ' <span class="tag real">REAL</span>' : ''}<small>${b.item.nome}</small>
     <small style="margin-top:3px">${icone(st)} ${fmt(b.qtd)} un. · mín. ${fmt(b.min)} · ${STATUS[st].rot}</small>`;
 }
@@ -1653,8 +1643,8 @@ function atualizarHud(){
     aj = 'Segure ↑ para andar (Shift corre) · arraste para olhar em volta · clique numa caixa para ir até ela';
   } else {
     const b = binNav(), st = statusDe(b), outra = LINHAS[nav.li ^ 1];
-    const q = b.real && !proto.online ? STATUS.offline.rot : `${fmt(b.qtd)} un.`;
-    onde = `<b>${b.cod}</b><span>${icone(st)} ${q} · ${b.item.nome}</span>`;
+    const q = !b.real || !proto.online ? STATUS[st].rot : `${fmt(b.qtd)} un.`;
+    onde = `<b>${b.cod}</b><span>${icone(st)} ${q}${b.real ? ` · ${b.item.nome}` : ''}</span>`;
     bts = `<span class="hud-pad">${botaoHud('cesq', '←')}${botaoHud('cima', '↑')}${botaoHud('baixo', '↓')}${botaoHud('cdir', '→')}</span>`
         + botaoHud('virar', 'Espaço', `Virar para a estante ${outra.letra}`) + botaoHud('voltar', 'Esc', 'Olhar o corredor') + ant + prox;
     aj = `Estante ${LINHAS[nav.li].letra} · módulo ${dois(nav.m)} · nível ${nav.n} · posição ${nav.p} — ← → troca de caixa, ↑ ↓ de nível`;
@@ -1729,14 +1719,14 @@ function criarPlanta(cont, mini){
 }
 
 /* resumo por módulo (21 caixas cada): usado nas cores da planta e nas dicas */
-const resumo = Array.from({length: LINHAS.length * N_MOD}, () => ({z: 0, bx: 0, oc: 0, ach: 0}));
+const resumo = Array.from({length: LINHAS.length * N_MOD}, () => ({z: 0, bx: 0, oc: 0, ach: 0, real: 0}));
 function calcularResumo(){
   for (let k = 0; k < resumo.length; k++){
-    const r = resumo[k]; r.z = r.bx = r.oc = r.ach = 0;
+    const r = resumo[k]; r.z = r.bx = r.oc = r.ach = r.real = 0;
     for (let j = k * N_NIV * N_POS, fim = j + N_NIV * N_POS; j < fim; j++){
       const b = bins[j], st = statusDe(b);
       if (st === 'zerado') r.z++; else if (st === 'baixo') r.bx++;
-      r.oc += Math.min(1, b.qtd / b.cap);
+      if (b.real){ r.real++; r.oc += Math.min(1, b.qtd / b.cap); }
       if (filtro && filtro.has(b.i)) r.ach++;
     }
   }
@@ -1744,10 +1734,11 @@ function calcularResumo(){
 const COR_MOD_OK = '#59626c', COR_APAGADO_2D = '#2c3238';
 function corModulo(r){
   if (filtro) return r.ach ? COR.destaque : COR_APAGADO_2D;
-  if (modoCor === 'ocup') return hexLin(rampa(r.oc / (N_NIV * N_POS)));
+  if (modoCor === 'ocup') return r.real ? hexLin(rampa(r.oc / r.real)) : COR.semsensor;
   if (r.z) return COR.zerado;
   if (r.bx) return COR.baixo;
-  return modoCor === 'status' ? COR.ok : COR_MOD_OK;
+  if (modoCor === 'status') return r.real ? COR.ok : COR.semsensor;
+  return COR_MOD_OK;
 }
 function pintarPlanta(pl){
   resumo.forEach((r, k) => {
@@ -1790,9 +1781,9 @@ function htmlAlvo(a){
   const r = resumo[a.li * N_MOD + a.m - 1], L = LINHAS[a.li], partes = [];
   if (r.z) partes.push(`${icone('zerado')} ${r.z} sem estoque`);
   if (r.bx) partes.push(`${icone('baixo')} ${r.bx} abaixo do mín.`);
-  if (!partes.length) partes.push(`${icone('ok')} nenhum alerta`);
+  if (!partes.length) partes.push(r.real ? `${icone('ok')} nenhum alerta` : `${icone('semsensor')} nenhuma caixa com sensor`);
   const real = PROTO.li === a.li && PROTO.m === a.m ? ' <span class="tag real">PROTO-01</span>' : '';
-  return `<b>${L.letra}-${dois(a.m)}</b>${real}<small>Estante ${L.letra}, módulo ${dois(a.m)} · 21 caixas · ocupação média ${fmt(r.oc / (N_NIV*N_POS) * 100)}%</small>
+  return `<b>${L.letra}-${dois(a.m)}</b>${real}<small>Estante ${L.letra}, módulo ${dois(a.m)} · 21 caixas · ${r.real ? `${r.real} com sensor` : 'sem sensores'}</small>
     ${filtro ? `<small>${r.ach} resultado(s) da busca</small>` : ''}<small style="margin-top:3px">${partes.join(' · ')}</small>`;
 }
 function ligarPlanta(pl, aoEscolher){
@@ -1840,7 +1831,7 @@ function construirElev(){
 function corCelula(b, st){
   if (filtro && !filtro.has(b.i)) return COR_APAGADO_2D;
   if (modoCor === 'status') return COR[st];
-  if (modoCor === 'ocup') return hexLin(rampa(b.qtd / b.cap));
+  if (modoCor === 'ocup') return b.real ? hexLin(rampa(b.qtd / b.cap)) : COR.semsensor;
   return COR.bin;
 }
 function render2D(reconstruir = false){
@@ -1870,9 +1861,9 @@ function pintar2D(){
   const cur = binNav();
   $('#elev').classList.toggle('ocup', modoCor === 'ocup');
   for (const [i, c] of elev.cels){
-    const b = bins[i], st = statusDe(b), fundo = corCelula(b, st), alerta = st !== 'ok';
+    const b = bins[i], st = statusDe(b), fundo = corCelula(b, st), alerta = st !== 'ok' && st !== 'semsensor';
     c.style.backgroundColor = fundo; c.style.color = tinta(fundo);
-    c.children[0].textContent = b.real && !proto.online ? '—' : fmt(b.qtd);
+    c.children[0].textContent = !b.real || !proto.online ? '—' : fmt(b.qtd);
     c.children[1].textContent = b.item.sku;
     const ic = c.children[2];
     ic.hidden = !alerta;
@@ -1888,7 +1879,8 @@ function pintar2D(){
   if (filtro) leg = `<span class="it"><i class="q" style="background:${COR.destaque}"></i>Tem resultado da busca</span><span class="it"><i class="q" style="background:${COR_APAGADO_2D}"></i>Sem resultado</span>`;
   else if (modoCor === 'ocup') leg = `<span class="it">Ocupação média do módulo</span><span class="grad"></span><span class="it" style="justify-content:space-between"><span>0%</span><span>100%</span></span>`;
   else leg = `<span class="it"><i class="q" style="background:${modoCor === 'status' ? COR.ok : COR_MOD_OK}"></i>Sem alertas</span>`
-    + `<span class="it">${icone('baixo')}Abaixo do mínimo</span><span class="it">${icone('zerado')}Sem estoque</span>`;
+    + `<span class="it">${icone('baixo')}Abaixo do mínimo</span><span class="it">${icone('zerado')}Sem estoque</span>`
+    + (modoCor === 'status' ? `<span class="it"><i class="q" style="background:${COR.semsensor}"></i>Sem sensor</span>` : '');
   leg += `<span class="it"><i class="anel"></i>PROTO-01 (real)</span><span class="it"><i class="jan"></i>Trecho mostrado abaixo</span>`;
   if (leg !== legPlanta) $('#plLeg').innerHTML = legPlanta = leg;
 }
@@ -1952,7 +1944,7 @@ $('#elev').addEventListener('mousemove', e => { const c = e.target.closest('.cel
 $('#elev').addEventListener('mouseleave', () => mostrarDica(null));
 
 /* =====================================================================
-   Protótipo: conexão USB (Web Serial), Wi-Fi (HTTP) e demonstração
+   Protótipo: conexão USB (Web Serial), internet (MQTT), rede local (HTTP) e demonstração
    ===================================================================== */
 function logDisp(txt){
   const d = $('#disp');
@@ -1961,7 +1953,7 @@ function logDisp(txt){
   d.scrollTop = d.scrollHeight;
 }
 function estadoConexao(){
-  const nomes = {serial:'USB', wifi:'Wi‑Fi', demo:'Demonstração'};
+  const nomes = {serial:'USB', wifi: proto.via === 'internet' ? 'Internet' : 'Wi‑Fi', demo:'Demonstração'};
   let cls = '', txt = 'Desconectado';
   if (proto.modo === 'demo'){ cls = 'demo'; txt = 'Demonstração'; }
   else if (proto.modo && proto.online){ cls = 'vivo'; txt = `Ao vivo · ${nomes[proto.modo]}`; }
@@ -1994,12 +1986,28 @@ function atualizarCardProto(){
   estadoConexao();
 }
 
-/* Recebe uma leitura do ESP32: {"peso_g": 1234.5, "estavel": true} */
+/* A caixa guarda o item e o peso de uma peça: quem abrir o painel em outro computador vê a mesma contagem */
+function lerCfgDaCaixa(d){
+  if (!(d.g_un > 0)){ if (!proto.cfgEnviado) enviarCfg(); return; }  // caixa nova: recebe o item configurado aqui
+  if (Date.now() - proto.cfgEnviado < 4000) return;                  // a caixa ainda está recebendo a última mudança
+  const c = proto.cfg, novo = {sku: PORSKU[d.item] ? d.item : c.sku, g: d.g_un, min: d.min ?? c.min, cap: d.cap || c.cap};
+  if (novo.sku === c.sku && novo.g === c.g && novo.min === c.min && novo.cap === c.cap) return;
+  Object.assign(c, novo); preencherCfg(); mudouCfg(false);
+  logDisp(`Item salvo na caixa: ${PROTO.item.nome}, ${fmt(c.g, c.g < 10 ? 1 : 0)} g por peça.`);
+}
+function enviarCfg(){
+  const c = proto.cfg;
+  proto.cfgEnviado = Date.now();
+  cmdCaixa(`item ${c.sku};${c.g};${c.min};${c.cap}`).catch(() => {});
+}
+
+/* Recebe uma leitura do ESP32: {"peso_g": 1234.5, "estavel": true, "item": "ROL-6205", "g_un": 128, ...} */
 function receberLeitura(d){
   if (typeof d.peso_g !== 'number') return;
   const eraOnline = proto.online;
+  if (proto.modo !== 'demo') lerCfgDaCaixa(d);
   proto.pesoG = d.peso_g; proto.estavel = d.estavel !== false; proto.ultimo = Date.now(); proto.online = true;
-  if (d.ip && d.ip !== proto.ip){ proto.ip = d.ip; if (!$('#inIp').value) $('#inIp').value = d.ip; logDisp(`IP da caixa: ${d.ip}`); }
+  if (d.ip && d.ip !== proto.ip){ proto.ip = d.ip; logDisp(`IP da caixa na rede: ${d.ip}`); }
   protoLedEsp.material.color.copy(COR_LED_ESP.on); protoLedEsp.userData.pisca = performance.now();
   const q = Math.max(0, Math.round(Math.max(0, proto.pesoG) / proto.cfg.g));
   const agora = Date.now();
@@ -2008,7 +2016,7 @@ function receberLeitura(d){
   else if (agora - proto.candDesde >= (proto.estavel ? 1200 : 2500)){
     if (!proto.sincronizado){
       proto.sincronizado = true;
-      PROTO.qtd = q; PROTO.ult = agora; PROTO.hist.push({t: agora, q});
+      PROTO.qtd = q; PROTO.ult = agora; PROTO.hist.push({t: agora, q}); sujoUI = true;
       registrarEvento(PROTO, 0, `Sincronizado: ${fmt(q)} un. na caixa`);
     } else if (q !== PROTO.qtd){
       mover(PROTO, q - PROTO.qtd, q < PROTO.qtd ? 'Retirada' : 'Reposição');
@@ -2032,12 +2040,14 @@ function resincronizar(){ proto.sincronizado = false; proto.candQtd = null; }
 async function desconectar(){
   clearInterval(proto.wifiTimer); proto.wifiTimer = null;
   clearInterval(proto.demo.timer); proto.demo.timer = null;
+  clearTimeout(proto.mqttTimer); proto.mqttTimer = null;
+  if (proto.mqtt){ const c = proto.mqtt; proto.mqtt = null; c.fechar(); }
   if (proto.porta){
     const p = proto.porta; proto.porta = null;
     try { await proto.leitor?.cancel(); } catch(e){}
     try { await p.close(); } catch(e){}
   }
-  proto.modo = null; proto.online = false; proto.ultimo = 0; proto.pesoG = null;
+  proto.modo = null; proto.via = null; proto.online = false; proto.ultimo = 0; proto.pesoG = null; proto.cfgEnviado = 0;
   resincronizar(); sujoUI = true; pintarProto(); atualizarCardProto();
 }
 
@@ -2083,16 +2093,93 @@ async function enviarSerial(txt){
   try { await w.write(new TextEncoder().encode(txt + '\n')); } finally { w.releaseLock(); }
 }
 
+/* Envia um comando para a caixa pelo caminho conectado (t = tara, item … = item da caixa) */
+async function cmdCaixa(txt){
+  if (proto.modo === 'serial') return enviarSerial(txt);
+  if (proto.via === 'internet'){ if (!proto.mqtt?.publicar(`gemeo-almox/${proto.canal}/cmd`, txt)) throw new Error('sem conexão'); return; }
+  if (proto.modo === 'wifi') return fetch(`http://${proto.alvo}/cmd?c=${encodeURIComponent(txt)}`, {cache:'no-store', signal: AbortSignal.timeout(2500)});
+}
+
+/* Cliente MQTT mínimo (versão 3.1.1 sobre WebSocket): conecta, assina, publica e mantém a conexão viva.
+   É só o que o painel precisa para falar com a caixa pela internet, sem outra biblioteca. */
+function mqttWs(url, {aoConectar, aoMensagem, aoFechar}){
+  const ws = new WebSocket(url, 'mqtt'); ws.binaryType = 'arraybuffer';
+  const enc = new TextEncoder(), dec = new TextDecoder();
+  const str = s => { const b = enc.encode(s); return [b.length >> 8, b.length & 255, ...b]; };
+  const tam = n => { const r = []; do { let d = n % 128; n = Math.floor(n / 128); if (n) d |= 128; r.push(d); } while (n); return r; };
+  const enviar = (cab, corpo) => ws.readyState === 1 && (ws.send(new Uint8Array([cab, ...tam(corpo.length), ...corpo])), true);
+  let resto = new Uint8Array(0), ping = null, idPacote = 1;
+  // CONNECT: sessão limpa, keepalive de 60 s
+  ws.onopen = () => enviar(0x10, [...str('MQTT'), 4, 0x02, 0, 60, ...str('painel-' + Math.random().toString(36).slice(2, 10))]);
+  ws.onmessage = e => {
+    const b = new Uint8Array(resto.length + e.data.byteLength); b.set(resto); b.set(new Uint8Array(e.data), resto.length);
+    let i = 0;
+    while (b.length - i >= 2){
+      let n = 0, mult = 1, j = i + 1, d;
+      do { d = b[j++]; n += (d & 127) * mult; mult *= 128; } while (d & 128 && j < b.length);
+      if (d & 128 || j + n > b.length) break;  // pacote incompleto: espera o resto
+      tratar(b[i], b.subarray(j, j + n)); i = j + n;
+    }
+    resto = b.slice(i);
+  };
+  function tratar(cab, c){
+    const tipo = cab >> 4;
+    if (tipo === 2){  // CONNACK
+      if (c[1] !== 0){ ws.close(); return; }
+      ping = setInterval(() => enviar(0xC0, []), 30000);
+      aoConectar();
+    } else if (tipo === 3){  // PUBLISH
+      const n = (c[0] << 8) | c[1], k = 2 + n + ((cab >> 1) & 3 ? 2 : 0);
+      try { aoMensagem(dec.decode(c.subarray(2, 2 + n)), dec.decode(c.subarray(k))); } catch(e){}
+    }
+  }
+  ws.onclose = () => { clearInterval(ping); aoFechar(); };
+  return {
+    assinar: t => enviar(0x82, [idPacote >> 8, idPacote++ & 255, ...str(t), 0]),
+    publicar: (t, txt) => enviar(0x30, [...str(t), ...enc.encode(txt)]),
+    fechar: () => { enviar(0xE0, []); ws.close(); },
+  };
+}
+
+async function conectarInternet(canal){
+  await desconectar();
+  proto.cfg.wifi = canal; guardar('gemeo-almox-proto', proto.cfg);
+  proto.modo = 'wifi'; proto.via = 'internet'; proto.canal = canal; resincronizar(); atualizarCardProto();
+  logDisp(`Conectando pela internet à caixa "${canal}"…`);
+  const base = `gemeo-almox/${canal}/`;
+  let avisou = false;
+  const abrir = () => {
+    const c = mqttWs(MQTT_URL, {
+      aoConectar: () => { c.assinar(base + 'dados'); c.assinar(base + 'status'); avisou = false; logDisp('Servidor conectado. Aguardando a caixa…'); },
+      aoMensagem: (t, txt) => {
+        if (t === base + 'status') logDisp(txt === 'online' ? 'A caixa está online.' : 'A caixa está desligada ou sem internet.');
+        else if (t === base + 'dados') receberLeitura(JSON.parse(txt));
+      },
+      aoFechar: () => {
+        if (proto.mqtt !== c) return;  // fechada pelo próprio painel
+        proto.mqtt = null;
+        if (!avisou){ avisou = true; logDisp('Sem conexão com o servidor. Tentando de novo…'); }
+        proto.mqttTimer = setTimeout(abrir, 4000);
+      },
+    });
+    proto.mqtt = c;
+  };
+  abrir();
+}
+
 async function conectarWifi(){
-  const ip = $('#inIp').value.trim().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
-  if (!ip){ $('#inIp').focus(); return; }
+  const alvo = $('#inIp').value.trim().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+  if (!alvo){ $('#inIp').focus(); return; }
+  // IP ou nome .local = rede local; qualquer outra coisa é o código da caixa na internet
+  if (!/^(\d{1,3}\.){3}\d{1,3}(:\d+)?$|\.local(:\d+)?$/i.test(alvo)) return conectarInternet(alvo);
+  const ip = alvo;
   if (location.protocol === 'https:'){
-    avisar('No link publicado (https) o navegador bloqueia a conexão Wi‑Fi com o ESP32. Use USB ou baixe o projeto e abra o index.html pelo computador.', 9000);
+    avisar('No link publicado (https) o navegador não deixa acessar o IP do ESP32. Digite o código da caixa (internet) ou abra o index.html baixado no computador.', 9000);
     return;
   }
   await desconectar();
-  proto.cfg.ip = ip; guardar('gemeo-almox-proto', proto.cfg);
-  proto.modo = 'wifi'; resincronizar(); atualizarCardProto();
+  proto.cfg.wifi = ip; guardar('gemeo-almox-proto', proto.cfg);
+  proto.modo = 'wifi'; proto.via = 'ip'; proto.alvo = ip; resincronizar(); atualizarCardProto();
   logDisp(`Consultando http://${ip}/dados …`);
   let falhas = 0;
   const consultar = async () => {
@@ -2134,27 +2221,28 @@ $('#segModo').addEventListener('click', e => {
   $('#cxWifi').hidden = m !== 'wifi';
   if (m === 'serial') conectarSerial();
   else if (m === 'demo') iniciarDemo();
-  else { if (!$('#inIp').value) $('#inIp').value = proto.cfg.ip || ''; $('#inIp').focus(); estadoConexao(); }
+  else { if (!$('#inIp').value) $('#inIp').value = proto.cfg.wifi || CANAL_PADRAO; $('#inIp').focus(); estadoConexao(); }
 });
 $('#btWifi').addEventListener('click', conectarWifi);
 $('#inIp').addEventListener('keydown', e => { if (e.key === 'Enter') conectarWifi(); });
 $('#btDesc').addEventListener('click', () => { $('#cxWifi').hidden = true; desconectar(); logDisp('Desconectado.'); });
 $('#btTara').addEventListener('click', async () => {
-  if (proto.modo === 'serial') await enviarSerial('t');
-  else if (proto.modo === 'wifi'){ try { await fetch(`http://${proto.cfg.ip}/tara`, {cache:'no-store'}); } catch(e){ avisar('Não foi possível enviar a tara pelo Wi‑Fi.'); return; } }
-  else if (proto.modo === 'demo') proto.demo.tara = proto.demo.atual;
+  if (proto.modo === 'demo') proto.demo.tara = proto.demo.atual;
+  else { try { await cmdCaixa('t'); } catch(e){ avisar('Não foi possível enviar a tara para a caixa.'); return; } }
   resincronizar();
   logDisp('Tara enviada: a caixa vazia passa a valer 0 g.');
 });
 
 /* Configuração do item da caixa protótipo */
 $('#selItem').innerHTML = CATALOGO.map(c => `<option value="${c.sku}">${c.nome} (${fmt(c.g, c.g < 10 ? 1 : 0)} g)</option>`).join('');
-function preencherCfg(){ $('#selItem').value = proto.cfg.sku; $('#inG').value = proto.cfg.g; $('#inMin').value = proto.cfg.min; $('#inCap').value = proto.cfg.cap; $('#inIp').value = proto.cfg.ip || ''; }
+function preencherCfg(){ $('#selItem').value = proto.cfg.sku; $('#inG').value = proto.cfg.g; $('#inMin').value = proto.cfg.min; $('#inCap').value = proto.cfg.cap; }
 preencherCfg();
-function mudouCfg(){
+$('#inIp').value = proto.cfg.wifi || CANAL_PADRAO;
+function mudouCfg(enviar = true){
   aplicarCfgProto(); atualizarEtiquetaProto(); resincronizar();
   sujoUI = true; pintarProto(); atualizarCardProto();
   if (selecionado === PROTO) atualizarDetalhe();
+  if (enviar && proto.online && proto.modo !== 'demo') enviarCfg();  // a caixa guarda o item para os outros painéis
 }
 $('#selItem').addEventListener('change', e => {
   const it = PORSKU[e.target.value];
@@ -2230,7 +2318,7 @@ function animar(agora){
 /* início */
 pintarProto(); atualizarCardProto(); atualizarPainel();
 requestAnimationFrame(animar);
-// atalhos pela URL, ex.: index.html#proto, index.html#proto&demo, index.html#corredor, index.html#2d
+// atalhos pela URL, ex.: index.html#proto, index.html#proto&demo, index.html#proto&caixa=ufabc-almox-g5, index.html#corredor, index.html#2d
 const opcoesUrl = location.hash.slice(1).split('&');
 setTimeout(() => {
   $('#carregando').style.opacity = 0;
@@ -2239,6 +2327,8 @@ setTimeout(() => {
   marcarVista(v || 'geral'); v ? VISTAS[v](0) : VISTAS.geral(1800);
   if (opcoesUrl.includes('2d')) entrar2D();
   if (opcoesUrl.includes('demo')) iniciarDemo();
+  const caixa = opcoesUrl.find(o => o === 'caixa' || o.startsWith('caixa='));
+  if (caixa){ $('#cxWifi').hidden = false; $('#inIp').value = decodeURIComponent(caixa.slice(6)) || CANAL_PADRAO; conectarWifi(); }
 }, 250);
 setTimeout(() => $('#dica').style.opacity = 0, 9000);
 </script>
